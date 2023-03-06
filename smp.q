@@ -3,10 +3,9 @@ M:get each read0 `male.txt
 W:get each read0 `female.txt
 m:1+til 8
 w:1+til 8
-3 1 7 5 4 6 8 2~m first sms:.match.smp[w?W] over (count[M]#0N;m?M)
-
-([]w:`m`M)!(`$string w)!/:m sms
-show w!/:m first each smp[w?W] scan (count[m]#0N;m?M)
+3 1 7 5 4 6 8 2~m first sms:.match.smp over (0N;w?M;w?W)
+pMW:(0N;m?M;w?W)
+pMW:.match.smp pMW
 \
 m:`A`B`C
 w:`X`Y`Z
