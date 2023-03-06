@@ -1,33 +1,32 @@
 \d .match
 
 / stable marriage problem (SMP) aka Gale-Shapley Algorithm
-/ matrix of (W)omen and (M)en's preferences. vector of resulting
-/ (p)airs can be passed in as atom, and will be resized appropriately
-smp:{[pMW]
- p:pMW 0;n:count M:pMW 1;W:pMW 2;
- mi:(p:n#p)?0N; / find unengaged man
- if[n=mi;:pMW]; / everyone married
- w:W wi:first m:M mi;           / find preferred woman
+
+/ given (e)ngagement vector (can be atomic 0N) and (M)en and (W)omen
+/ matrices, find next engagement, remove undesirable men and unavailable
+/ women.  a single roommate matrix is assumed if a (W)omen matrix is not
+/ provide.
+engage:{[eMW]
+ e:eMW 0;n:count M:eMW Mi:1;W:eMW Wi:-1+count eMW;
+ mi:(e:n#e)?0N;          / find single man
+ if[n=mi;:eMW];          / everyone is engaged
+ if[any 0=count each M;'`unstable];
+ w:W wi:first m:M mi;    / find preferred woman
  / if already engaged, and this man is better, renege
- if[not n=ei:p?wi;if[(</)w?(mi;ei);M:@[M;ei;1_];p[ei]:0N]];
- p[mi]:wi;                      / get engaged
- W[wi]:first c:(1+w?mi) cut w;  / remove worse men
- M:@[M;last c;except[;wi]];     / remove unavailable women
- (p;M;W)}
+ if[not n=ei:e?wi;if[(</)w?(mi;ei);eMW:.[eMW;(Mi;ei);1_];e[ei]:0N]];
+ e[mi]:wi; eMW[0]:e;                / get engaged
+ eMW[Wi;wi]:first c:(1+w?mi) cut w; / remove undesirable men
+ eMW:.[eMW;(Mi;c 1);except[;wi]];   / remove unavailable women
+ eMW}
 
-prune:{[p;R]
- R:@[R;p;{(1+x?y) cut x};i:til count R];
- R:p,'@[R[;0];R[;1];{x except y};i];
- (p;R)}
-
-/ stable roommates problem (SRP)
-srp1:{[pRi]
- pRi:smp[pRi 1;pRi];
- pRi}
+smp:{[M;W]
+ u:asc (union/) over (M;W);
+ eMW:u engage over (count[M]#0N;u?M;u?W);
+ eMW}
 
 srp:{[R]
- rP:srp1 over (count[R]#0N;R);
- if[1=all count each last pR:prune . srs;:pR];
- pR}
+ u:asc (union/) R;
+ eR:u engage over (count[R]#0N;u?R);
+ eR}
 
 
