@@ -53,3 +53,18 @@ srp:{[R]
  R:last eR:phase1 over (count[R]#0N;ur?R);
  R:ur phase2 scan R;
  R}
+
+/ https://matching.readthedocs.io/en/latest/discussion/hospital_resident
+
+/ given hospital (c)apacity and (r)esident matches, (h)ospital matches,
+/ (R)esident and (H)ospital preference matrices, return the resident-optimal
+/ matches
+hrp:{[c;rhRH]
+ r:rhRH 0;h:rhRH 1;R:rhRH 2;H:rhRH 3;
+ if[null ri:first where null[r]&0<count each R;:rhRH]; / nothing to match
+ hp:H hi:first R ri;                                   / preferred hospital
+ if[not ri in hp;:.[rhRH;(2;ri);1_]];                  / hospital rejects
+ ch:count ris:h[hi],:ri; r[ri]:hi;                     / match
+ if[c[hi]<ch;wri:hp max hp?ris;ris:h[hi]:drop[wri;ris];hp:H[hi]:drop[wri;hp];r[wri]:0N;R:@[R;wri;1_];ch-:1];
+ if[c[hi]=ch;H[hi]:first c:(0;1+max hp?ris) cut hp;R@[R;c 1;drop hi]];
+ (r;h;R;H)}
