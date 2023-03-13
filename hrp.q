@@ -17,3 +17,9 @@ rhRH:.match.hrp[c] over (count[R]#0N;(count[H];0)#0N;h?R;r?H)
 (r;H;r;h)!'(h;r;h;r)@' rhRH
 r!R
 h!H
+
+rhRH:.match.hrp2[c] over (count[R]#0N;(count[H];0)#0N;h?R;r?H)
+(`C`M`C`M`G;(`L`S;`D`A;1#`J))~(h;r)@'2#rhRH
+(r;H;r;h)!'(h;r;h;r)@' rhRH
+r!R
+h!H
