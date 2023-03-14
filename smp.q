@@ -2,7 +2,9 @@
 
 / stable marriage problem
 
-M:(1+til count M)!M:get each read0 `male.txt
-W:(1+til count W)!W:get each read0 `female.txt
-3 1 7 5 4 6 8 2~value first sms:.match.smp[M;W]
+/ https://people.math.sc.edu/czabarka/Theses/HidakatsuThesis.pdf
+
+S:(1+til count S)!S:get each read0 `male.txt
+R:(1+til count R)!R:get each read0 `female.txt
+3 1 7 5 4 6 8 2~value first sms:.match.smp[S;R]
 3 1 7 5 4 6 8 2~first each value sms 1

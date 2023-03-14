@@ -5,27 +5,27 @@ drop:{y _ y?x}
 
 / stable marriage problem (SMP) aka Gale-Shapley Algorithm
 
-/ given (e)ngagement vector and (M)en and (W)omen matrices, find next
-/ engagement, remove undesirable men and unavailable women.  a single
-/ roommate matrix is assumed if a (W)omen matrix is not provide.
-phase1:{[eMW]
- n:count e:eMW 0;M:eMW Mi:1;W:eMW Wi:-1+count eMW;
- mi:e?0N;                       / find single man
- if[n=mi;:eMW];                 / everyone is engaged
- if[any 0=count each M;'`unstable];
- w:W wi:first m:M mi;    / find preferred woman
- / if already engaged, and this man is better, renege
- if[not n=ei:e?wi;if[(</)w?(mi;ei);eMW:.[eMW;(Mi;ei);1_];e[ei]:0N]];
- e[mi]:wi; eMW[0]:e;                  / get engaged
- eMW[Wi;wi]:first c:(0;1+w?mi) cut w; / remove undesirable men
- eMW:.[eMW;(Mi;c 1);drop wi];         / remove unavailable women
- eMW}
+/ given (e)ngagement vector and (S)uitor and (R)eviewer matrices, find next
+/ engagement, remove undesirable suitors and unavailable reviewers.  a single
+/ roommate matrix is assumed if a (R)eviewer matrix is not provided.
+phase1:{[eSR]
+ n:count e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;
+ si:e?0N;                       / find single suitor
+ if[n=si;:eSR];                 / everyone is engaged
+ if[any 0=count each S;'`unstable];
+ r:R ri:first s:S si;    / find preferred reviewer
+ / if already engaged, and this suitor is better, renege
+ if[not n=ei:e?ri;if[(</)r?(si;ei);eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
+ e[si]:ri; eSR[0]:e;                  / get engaged
+ eSR[Ri;ri]:first c:(0;1+r?si) cut r; / remove undesirable suitors
+ eSR:.[eSR;(Si;c 1);drop ri];         / remove unavailable reviewers
+ eSR}
 
-smp:{[M;W]
- um:key M; uw:key W;
- eMW:phase1 over (count[M]#0N;uw?value M;um?value W);
- eMW:(um;um;uw)!'(uw;uw;um)@'eMW;
- eMW}
+smp:{[S;R]
+ us:key S; ur:key R;
+ eSR:phase1 over (count[S]#0N;ur?value S;us?value R);
+ eSR:(us;us;ur)!'(ur;ur;us)@'eSR;
+ eSR}
 
 link:{[R;l] l,enlist (last R i;i:R[last[l] 0;1])}
 cycle:{[R;l]
