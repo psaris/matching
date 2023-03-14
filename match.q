@@ -3,6 +3,7 @@
 / drop first occurrence of x from y
 drop:{y _ y?x}
 
+
 / stable marriage problem (SMP) aka Gale-Shapley Algorithm
 
 / given (e)ngagement vector and (S)uitor and (R)eviewer matrices, find next
@@ -26,6 +27,9 @@ smp:{[S;R]
  eSR:phase1 over (count[S]#0N;ur?value S;us?value R);
  eSR:(us;us;ur)!'(ur;ur;us)@'eSR;
  eSR}
+
+
+/ stable roommates problem (SRP) aka Robert Irving Algorithm
 
 link:{[R;l] l,enlist (last R i;i:R[last[l] 0;1])}
 cycle:{[R;l]
@@ -55,11 +59,12 @@ srp:{[R]
  R:enlist[ur!first each last R],R;
  R}
 
-/ https://matching.readthedocs.io/en/latest/discussion/hospital_resident
+
+/ hospital-resident problem (HRP)
 
-/ given hospital (c)apacity and (r)esident matches, (h)ospital matches,
-/ (R)esident and (H)ospital preference matrices, return the resident-optimal
-/ matches
+/ given hospital (c)apacity and (h)ospital matches, (r)esident matches,
+/ (H)ospital and (R)esident preference matrices, find next resident-optimal
+/ match
 hrpra:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
  if[null ri:first where null[r]&0<count each R;:hrHR]; / nothing to match
@@ -70,9 +75,9 @@ hrpra:{[c;hrHR]
  if[ch=c hi;H[hi]:first c:(0;1+max hp?ris) cut hp;R:@[R;c 1;drop hi]];
  (h;r;H;R)}
 
-/ given hospital (c)apacity and (r)esident matches, (h)ospital matches,
-/ (R)esident and (H)ospital preference matrices, return the hospital-optimal
-/ matches
+/ given hospital (c)apacity and (h)ospital matches, (r)esident matches,
+/ (H)ospital and (R)esident preference matrices, find next hospital-optimal
+/ match
 hrpha:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
  if[null hi:first where (c>count each h)&0<count each H;:hrHR]; / nothing to match

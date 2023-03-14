@@ -2,6 +2,8 @@
 
 / hospital resident problem
 
+/ https://matching.readthedocs.io/en/latest/discussion/hospital_resident
+
 / Ada, Sam, Dani, Luc, Jo
 r:`A`S`D`L`J
 / Mercy, City, General
