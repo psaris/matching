@@ -22,10 +22,10 @@ phase1:{[eMW]
  eMW}
 
 smp:{[M;W]
- uw:asc (union/) M;
- um:asc (union/) W;
- MW:(uw;um)@'1_phase1 over (count[M]#0N;uw?M;um?W);
- MW}
+ um:key M; uw:key W;
+ eMW:phase1 over (count[M]#0N;uw?value M;um?value W);
+ eMW:(um;um;uw)!'(uw;uw;um)@'eMW;
+ eMW}
 
 link:{[R;l] l,enlist (last R i;i:R[last[l] 0;1])}
 cycle:{[R;l]
@@ -49,9 +49,10 @@ phase2:{[R]
  R}
 
 srp:{[R]
- ur:asc (union/) R;
- R:last eR:phase1 over (count[R]#0N;ur?R);
+ ur:key R;
+ R:last eR:phase1 over (count[R]#0N;ur?value R);
  R:ur phase2 scan R;
+ R:enlist[ur!first each last R],R;
  R}
 
 / https://matching.readthedocs.io/en/latest/discussion/hospital_resident
