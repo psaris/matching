@@ -60,25 +60,37 @@ srp:{[R]
 / given hospital (c)apacity and (r)esident matches, (h)ospital matches,
 / (R)esident and (H)ospital preference matrices, return the resident-optimal
 / matches
-hrp:{[c;rhRH]
- r:rhRH 0;h:rhRH 1;R:rhRH 2;H:rhRH 3;
- if[null ri:first where null[r]&0<count each R;:rhRH]; / nothing to match
+hrpra:{[c;hrHR]
+ h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
+ if[null ri:first where null[r]&0<count each R;:hrHR]; / nothing to match
  hp:H hi:first R ri;                                   / preferred hospital
- if[not ri in hp;:.[rhRH;(2;ri);1_]];                  / hospital rejects
+ if[not ri in hp;:.[hrHR;(3;ri);1_]];                  / hospital rejects
  ch:count ris:h[hi],:ri; r[ri]:hi;                     / match
- if[c[hi]<ch;wri:hp max hp?ris;ris:h[hi]:drop[wri;ris];hp:H[hi]:drop[wri;hp];r[wri]:0N;R:@[R;wri;1_];ch-:1];
- if[c[hi]=ch;H[hi]:first c:(0;1+max hp?ris) cut hp;R@[R;c 1;drop hi]];
- (r;h;R;H)}
+ if[ch>c hi;wri:hp max hp?ris;ris:h[hi]:drop[wri;ris];r[wri]:0N;hp:H[hi]:drop[wri;hp];R:@[R;wri;1_];ch-:1];
+ if[ch=c hi;H[hi]:first c:(0;1+max hp?ris) cut hp;R:@[R;c 1;drop hi]];
+ (h;r;H;R)}
 
 / given hospital (c)apacity and (r)esident matches, (h)ospital matches,
 / (R)esident and (H)ospital preference matrices, return the hospital-optimal
 / matches
-hrp2:{[c;rhRH]
- r:rhRH 0;h:rhRH 1;R:rhRH 2;H:rhRH 3;
- if[null hi:first where (c>count each h)&0<count each H;:rhRH]; / nothing to match
+hrpha:{[c;hrHR]
+ h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
+ if[null hi:first where (c>count each h)&0<count each H;:hrHR]; / nothing to match
  rp:R ri:first H[hi] except h[hi]; / preferred resident
- if[$[count[rp]=hir:rp?hi;1b;hir>rp?ehi:r ri];:.[rhRH;(3;hi);1_]]; / reject
+ if[$[count[rp]=hir:rp?hi;1b;hir>rp?ehi:r ri];:.[hrHR;(2;hi);1_]]; / reject
  if[not null ehi;h:@[h;ehi;drop ri];H:@[H;ehi;1_];rp:R[ri]:drop[ehi;rp]]; / drop existing match if worse
  h[hi],:ri; r[ri]:hi;       / match
  R[ri]:first c:(0;1+hir) cut rp;H:@[H;c 1;drop ri];
- (r;h;R;H)}
+ (h;r;H;R)}
+
+hrpr:{[C;H;R]
+ uh:key H; ur:key R;
+ hrHR:hrpra[C uh] over ((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
+ hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
+ hrHR}
+
+hrph:{[C;H;R]
+ uh:key H; ur:key R;
+ hrHR:hrpha[C uh] over ((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
+ hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
+ hrHR}
