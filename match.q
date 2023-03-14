@@ -22,8 +22,9 @@ phase1:{[eMW]
  eMW}
 
 smp:{[M;W]
- u:asc (union/) over (M;W);
- MW:u 1_phase1 over (count[M]#0N;u?M;u?W);
+ uw:asc (union/) M;
+ um:asc (union/) W;
+ MW:(uw;um)@'1_phase1 over (count[M]#0N;uw?M;um?W);
  MW}
 
 link:{[R;l] l,enlist (last R i;i:R[last[l] 0;1])}
@@ -48,7 +49,7 @@ phase2:{[R]
  R}
 
 srp:{[R]
- u:asc (union/) R;
- R:last eR:phase1 over (count[R]#0N;u?R);
- R:u phase2 scan R;
+ ur:asc (union/) R;
+ R:last eR:phase1 over (count[R]#0N;ur?R);
+ R:ur phase2 scan R;
  R}
