@@ -80,12 +80,12 @@ hrpra:{[c;hrHR]
 / match
 hrpha:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
- if[null hi:first where (c>count each h)&0<count each H;:hrHR]; / nothing to match
- rp:R ri:first H[hi] except h[hi]; / preferred resident
- if[$[count[rp]=hir:rp?hi;1b;hir>rp?ehi:r ri];:.[hrHR;(2;hi);1_]]; / reject
- if[not null ehi;h:@[h;ehi;drop ri];H:@[H;ehi;1_];rp:R[ri]:drop[ehi;rp]]; / drop existing match if worse
+ if[null hi:first where (c>count each h)&0<count each m:H except' h;:hrHR]; / nothing to match
+ rp:R ri:first m hi; / preferred resident
+ if[not hi in rp;:.[hrHR;(2;hi);1_]]; / resident rejects
+ if[not null ehi:r ri;h:@[h;ehi;drop ri];H:@[H;ehi;1_];rp:R[ri]:drop[ehi;rp]]; / drop existing match if worse
  h[hi],:ri; r[ri]:hi;       / match
- R[ri]:first c:(0;1+hir) cut rp;H:@[H;c 1;drop ri];
+ R[ri]:first c:(0;1+rp?hi) cut rp;H:@[H;c 1;drop ri];
  (h;r;H;R)}
 
 hrpr:{[C;H;R]
