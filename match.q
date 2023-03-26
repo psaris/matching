@@ -80,8 +80,9 @@ hrpra:{[c;hrHR]
 / match
 hrpha:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
- if[null hi:first where (c>count each h)&0<count each m:H except' h;:hrHR]; / nothing to match
- rp:R ri:first m hi; / preferred resident
+ hi:w mi:first where 0<count each m:H[w] except' h w:where c>count each h;
+ if[null mi;:hrHR]; / nothing to match
+ rp:R ri:first m mi; / preferred resident
  if[not hi in rp;:.[hrHR;(2;hi);1_]]; / resident rejects
  if[not null ehi:r ri;h:@[h;ehi;drop ri];H:@[H;ehi;1_];rp:R[ri]:drop[ehi;rp]]; / drop existing match if worse
  h[hi],:ri; r[ri]:hi;       / match
