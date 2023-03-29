@@ -1,7 +1,7 @@
 \d .match
 
 / drop first occurrence of x from y
-drop:{y _ y?x}
+drop:{x _ x?y}
 
 
 / stable marriage problem (SMP) aka Gale-Shapley Algorithm
@@ -19,12 +19,13 @@ phase1:{[eSR]
  if[not n=ei:e?ri;if[(</)r?(si;ei);eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
  e[si]:ri; eSR[0]:e;                  / get engaged
  eSR[Ri;ri]:first c:(0;1+r?si) cut r; / remove undesirable suitors
- eSR:.[eSR;(Si;c 1);drop ri];         / remove unavailable reviewers
+ eSR:.[eSR;(Si;c 1);drop;ri];         / remove unavailable reviewers
  eSR}
 
 smp:{[S;R]
  us:key S; ur:key R;
- eSR:phase1 over (count[S]#0N;ur?value S;us?value R);
+ eSR:(count[S]#0N;ur?value S;us?value R);
+ eSR:phase1 over eSR;
  eSR:(us;us;ur)!'(ur;ur;us)@'eSR;
  eSR}
 
@@ -40,7 +41,7 @@ cycle:{[R;l]
 / mutually reject i and j
 reject:{[R;i;j]
  R[i]:first c:(0;1+r?j) cut r:R i;
- R:@[R;c 1;drop i];
+ R:@[R;c 1;drop;i];
  R}
 
 phase2:{[R]
@@ -54,7 +55,8 @@ phase2:{[R]
 
 srp:{[R]
  ur:key R;
- R:last eR:phase1 over (count[R]#0N;ur?value R);
+ eR:(count[R]#0N;ur?value R);
+ R:last phase1 over eR;
  R:ur phase2 scan R;
  R:enlist[ur!first each last R],R;
  R}
@@ -71,8 +73,8 @@ hrpra:{[c;hrHR]
  hp:H hi:first R ri;                                   / preferred hospital
  if[not ri in hp;:.[hrHR;(3;ri);1_]];                  / hospital rejects
  ch:count ris:h[hi],:ri; r[ri]:hi;                     / match
- if[ch>c hi;wri:hp max hp?ris;ris:h[hi]:drop[wri;ris];r[wri]:0N;hp:H[hi]:drop[wri;hp];R:@[R;wri;1_];ch-:1];
- if[ch=c hi;H[hi]:first c:(0;1+max hp?ris) cut hp;R:@[R;c 1;drop hi]];
+ if[ch>c hi;wri:hp max hp?ris;ris:h[hi]:drop[ris;wri];r[wri]:0N;hp:H[hi]:drop[hp;wri];R:@[R;wri;1_];ch-:1];
+ if[ch=c hi;H[hi]:first c:(0;1+max hp?ris) cut hp;R:@[R;c 1;drop;hi]];
  (h;r;H;R)}
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
@@ -84,19 +86,21 @@ hrpha:{[c;hrHR]
  if[null mi;:hrHR]; / nothing to match
  rp:R ri:first m mi; / preferred resident
  if[not hi in rp;:.[hrHR;(2;hi);1_]]; / resident rejects
- if[not null ehi:r ri;h:@[h;ehi;drop ri];H:@[H;ehi;1_];rp:R[ri]:drop[ehi;rp]]; / drop existing match if worse
+ if[not null ehi:r ri;h:@[h;ehi;drop;ri];H:@[H;ehi;1_];rp:R[ri]:drop[rp;ehi]]; / drop existing match if worse
  h[hi],:ri; r[ri]:hi;       / match
- R[ri]:first c:(0;1+rp?hi) cut rp;H:@[H;c 1;drop ri];
+ R[ri]:first c:(0;1+rp?hi) cut rp;H:@[H;c 1;drop;ri];
  (h;r;H;R)}
 
 hrpr:{[C;H;R]
  uh:key H; ur:key R;
- hrHR:hrpra[C uh] over ((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
+ hrHR:((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
+ hrHR:hrpra[C uh] over hrHR;
  hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
  hrHR}
 
 hrph:{[C;H;R]
  uh:key H; ur:key R;
- hrHR:hrpha[C uh] over ((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
+ hrHR:((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
+ hrHR:hrpha[C uh] over hrHR;
  hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
  hrHR}
