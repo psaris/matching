@@ -104,3 +104,43 @@ hrph:{[C;H;R]
  hrHR:hrpha[C uh] over hrHR;
  hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
  hrHR}
+
+
+/ student-allocation problem (SAP)
+
+/ given (p)roject (c)apacity, s(u)pervisor (c)apacity, (p)roject to
+/ s(u)pervisor map and s(u)pervisor matches, (p)roject matches, (s)tudent
+/ matches, s(U)pervisor preferences and (S)tudent preferences, find next
+/ student-optimal match
+sapsa:{[pc;uc;pu;upsUS]
+ u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
+ if[null si:first where null[s]&0<count each S;:upsUS]; / nothing to match
+ up:U ui:pu pi:first S si;      / preferred project's supervisors preferences
+ cu:count usis:u[ui],:si;cp:count psis:p[pi],:si;s[si]:pi; / match
+ if[cp>pc pi;                         / project over capacity
+  wsi:up max up?psis;                 / worst student
+  cp:count psis:p[pi]:drop[psis;wsi]; / drop from project
+  cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
+  s[wsi]:0N;                          / remove match
+  ];
+ if[cu>uc ui;                / supervisor over capacity
+  wsi:up max up?usis;                 / worst student
+  p:@[p;s wsi;drop;wsi];              / drop from project
+  cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
+  s[wsi]:0N;                          / remove match
+  ];
+ if[cp=pc pi;if[count[up]>i:1+max up?psis; S:@[S;i _ up;drop;pi]]]; / prune
+ if[cu=uc ui;
+  if[count[up]>i:1+max up?usis;
+   U[ui]:first c:(0;i) cut up;
+   S:@[;c 1;drop;]/[S;where pu = ui];
+   ];
+  ];
+ (u;p;s;U;S)}
+
+saps:{[PC;UC;PU;U;S]
+ up:key PU; uu:key U; us:key S; / unique project, supervisors and students
+ upsUS:((count[U];0)#0N;(count[PU];0)#0N;count[S]#0N;us?value U;up?value S);
+ upsUS:sapsa[PC up;UC uu;uu?PU up] over upsUS;
+ upsUS:(uu;up;us;uu;us)!'(us;us;up;us;up)@'upsUS;
+ upsUS}

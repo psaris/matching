@@ -1,6 +1,6 @@
 \l match.q
 
-/ student allocation problem
+/ student-allocation problem
 
 / https://matching.readthedocs.io/en/latest/discussion/student_allocation/index.html
 
@@ -18,25 +18,28 @@ p:select from p where capacity>0, not null code, not null supervisor
 u:select from u where capacity>0, not null name
 
 p:select from p where supervisor in u.name
-pc:exec code!capacity from p    / project capacity
-pu:exec code!supervisor from p  / project supervisor
-uc:exec name!capacity from u where name in value pu / supervisor capacity
+PC:exec code!capacity from p    / project capacity
+PU:exec code!supervisor from p  / project supervisor
+UC:exec name!capacity from u where name in value PU / supervisor capacity
 / student preferences (transform table into a list)
-sp:key[s][`name]!value (inter[;p[`code]] distinct value::) each s
+S:key[s][`name]!value (inter[;p[`code]] distinct value::) each s
 st:{x[`name] iasc x`rank} key s / sorted students
 
 / supervisor preferences (sorted students that rank supervisor's projects)
-up:(st#sp) {where (any y in::) each x}/: exec code by supervisor from p
-up:where[0=count each up] _ up / throw away any empty supervisors
+U:(st#S) {where (any y in::) each x}/: exec code by supervisor from p
+U:where[0=count each U] _ U / throw away any empty supervisors
 
-uru:u[`name] except key up      / unranked supervisors
-sc:uru _ sc                     / remove unranked supervisors
+uru:u[`name] except key U      / unranked supervisors
+UC:uru _ UC                     / remove unranked supervisors
 
-urp:p[`code] except raze sp     / unranked projects
-pc:urp _ pc                     / remove unranked projects
-pu:urp _ pu                     / remove unranked projects
+urp:p[`code] except raze S     / unranked projects
+PC:urp _ PC                     / remove unranked projects
+PU:urp _ PU                     / remove unranked projects
 
-pc&: uc pu                      / limit to project to supervisor's capacity
+PC&: UC PU                      / limit to project to supervisor's capacity
 
-uc&:sum each pc key[pu] group value[pu] / limit supervisor to sum of projects
+UC&:sum each PC key[PU] group value[PU] / limit supervisor to sum of projects
+
+.match.saps[PC;UC;PU;U;S] 1
+
 
