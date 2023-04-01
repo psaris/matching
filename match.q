@@ -107,19 +107,17 @@ hrpha:{[c;hrHR]
  R[ri]:first c:(0;1+rp?hi) cut rp; H:@[H;c 1;drop;ri]; / prune
  (h;r;H;R)}
 
-hrpr:{[C;H;R]
+/ hospital resident problem wrapper function that enumerates the inputs,
+/ calls the hrp function and unenumerates the results
+hrpw:{[hrpf;C;H;R]
  uh:key H; ur:key R;
  hrHR:((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
- hrHR:hrpra[C uh] over hrHR;
+ hrHR:hrpf[C uh] over hrHR;
  hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
  hrHR}
 
-hrph:{[C;H;R]
- uh:key H; ur:key R;
- hrHR:((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
- hrHR:hrpha[C uh] over hrHR;
- hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
- hrHR}
+hrpr:hrpw[hrpra]               / hospital resident problem (resident-optimal)
+hrph:hrpw[hrpha]               / hospital resident problem (hospital-optimal)
 
 
 / student-allocation problem (SAP)
@@ -154,9 +152,11 @@ sapsa:{[pc;uc;pu;upsUS]
   ];
  (u;p;s;U;S)}
 
-saps:{[PC;UC;PU;U;S]
+sapw:{[sapf;PC;UC;PU;U;S]
  up:key PU; uu:key U; us:key S; / unique project, supervisors and students
  upsUS:((count[U];0)#0N;(count[PU];0)#0N;count[S]#0N;us?value U;up?value S);
- upsUS:sapsa[PC up;UC uu;uu?PU up] over upsUS;
+ upsUS:sapf[PC up;UC uu;uu?PU up] over upsUS;
  upsUS:(uu;up;us;uu;us)!'(us;us;up;us;up)@'upsUS;
  upsUS}
+
+saps:sapw[sapsa]
