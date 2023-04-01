@@ -240,5 +240,9 @@ g = StudentAllocation.create_from_dictionaries(
 )
 
 matching = g.solve(optimal="student")
+dict(matching)
 assert g.check_validity()
 assert g.check_stability()
+
+matching = g.solve(optimal="supervisor")
+dict(matching)
