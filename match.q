@@ -103,7 +103,7 @@ hrpha:{[c;hrHR]
   H:@[H;ehi;1_];                      / drop resident from hospital prefs
   rp:R[ri]:drop[rp;ehi]               / drop hospital from resident prefs
   ];
- h[hi],:ri; r[ri]:hi;       / match
+ h[hi],:ri; r[ri]:hi;                                  / match
  R[ri]:first c:(0;1+rp?hi) cut rp; H:@[H;c 1;drop;ri]; / prune
  (h;r;H;R)}
 
@@ -152,6 +152,33 @@ sapsa:{[pc;uc;pu;upsUS]
   ];
  (u;p;s;U;S)}
 
+
+projects:{[pc;pu;p;S;U;ui]
+ pis:S sis:U ui;                / projects, students
+ nm:not sis (in/:)' p pis;      / not matched projects
+ um:ui = pu pis;                / supervisor matching projects
+ hc:pc[pis]>(count'') p pis;    / project with capacity
+ pis:pis@'where each nm&um&hc;  / potential projects
+ m:raze sis (,/:)' pis;         / matches
+ m}
+
+/ given (p)roject (c)apacity, s(u)pervisor (c)apacity, (p)roject to
+/ s(u)pervisor map and s(u)pervisor matches, (p)roject matches, (s)tudent
+/ matches, s(U)pervisor preferences and (S)tudent preferences, find next
+/ supervisor-optimal match
+sapua:{[pc;uc;pu;upsUS]
+ u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
+ w:where uc>count each u;       / supervisors with capacity
+ m:first raze w (,/:)' projects[pc;pu;p;S;U] each w;               / match
+ if[not count m:raze m;:upsUS];                                    / done
+ ui:m 0; sp:S si:m 1; pi: m 2;                                     / unpack
+ if[not null epi:s si; u:@[u;pu epi;drop;si]; p:@[p;epi;drop;si]]; / drop
+ u[ui],:si;p[pi],:si;s[si]:pi;                                     / match
+ if[count[sp]>i:1+sp?pi; S[si]:i#sp];                              / prune
+ (u;p;s;U;S)}
+
+/ student allocation problem wrapper function that enumerates the inputs,
+/ calls the sap function and unenumerates the results
 sapw:{[sapf;PC;UC;PU;U;S]
  up:key PU; uu:key U; us:key S; / unique project, supervisors and students
  upsUS:((count[U];0)#0N;(count[PU];0)#0N;count[S]#0N;us?value U;up?value S);
@@ -160,3 +187,4 @@ sapw:{[sapf;PC;UC;PU;U;S]
  upsUS}
 
 saps:sapw[sapsa]
+sapu:sapw[sapua]

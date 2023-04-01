@@ -27,12 +27,13 @@ st:{x[`name] iasc x`rank} key s / sorted students
 
 / supervisor preferences (sorted students that rank supervisor's projects)
 U:(st#S) {where (any y in::) each x}/: exec code by supervisor from p
-U:where[0=count each U] _ U / throw away any empty supervisors
+U:where[0=count each U] _ U     / throw away any empty supervisors
+S:where[0=count each S] _ S     / throw away empty students
 
-uru:u[`name] except key U      / unranked supervisors
+uru:u[`name] except key U       / unranked supervisors
 UC:uru _ UC                     / remove unranked supervisors
 
-urp:p[`code] except raze S     / unranked projects
+urp:p[`code] except raze S      / unranked projects
 PC:urp _ PC                     / remove unranked projects
 PU:urp _ PU                     / remove unranked projects
 
@@ -40,6 +41,6 @@ PC&: UC PU                      / limit to project to supervisor's capacity
 
 UC&:sum each PC key[PU] group value[PU] / limit supervisor to sum of projects
 
-.match.saps[PC;UC;PU;U;S] 1
-
-
+upsUS:.match.saps[PC;UC;PU;U;S]; upsUS 1
+upsUS:.match.sapu[PC;UC;PU;U;S]; upsUS 1
+all raze upsUS[1]=.j.k raze read0 `:sap.json
