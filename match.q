@@ -73,8 +73,19 @@ hrpra:{[c;hrHR]
  hp:H hi:first R ri;                                   / preferred hospital
  if[not ri in hp;:.[hrHR;(3;ri);1_]];                  / hospital rejects
  ch:count ris:h[hi],:ri; r[ri]:hi;                     / match
- if[ch>c hi;wri:hp max hp?ris;ris:h[hi]:drop[ris;wri];r[wri]:0N;hp:H[hi]:drop[hp;wri];R:@[R;wri;1_];ch-:1];
- if[ch=c hi;H[hi]:first c:(0;1+max hp?ris) cut hp;R:@[R;c 1;drop;hi]];
+ if[ch>c hi;                                           / over capacity
+  wri:hp max hp?ris;                                   / worst resident
+  ch:count ris:h[hi]:drop[ris;wri]; / drop resident from hospital match
+  hp:H[hi]:drop[hp;wri];            / drop resident from hospital prefs
+  R:@[R;wri;1_];                    / drop hospital from resident prefs
+  r[wri]:0N;                        / drop resident match
+  ];
+ if[ch=c hi;                    / prune worst residents from consideration
+  if[count[hp]>i:1+max hp?ris;
+   H[hi]:first c:(0;i) cut hp;  / drop residents from hospital prefs
+   R:@[R;c 1;drop;hi]           / drop hospital from resident prefs
+   ];
+  ];
  (h;r;H;R)}
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
@@ -82,13 +93,18 @@ hrpra:{[c;hrHR]
 / match
 hrpha:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
- hi:w mi:first where 0<count each m:H[w] except' h w:where c>count each h;
- if[null mi;:hrHR]; / nothing to match
- rp:R ri:first m mi; / preferred resident
- if[not hi in rp;:.[hrHR;(2;hi);1_]]; / resident rejects
- if[not null ehi:r ri;h:@[h;ehi;drop;ri];H:@[H;ehi;1_];rp:R[ri]:drop[rp;ehi]]; / drop existing match if worse
+ m:H[w] except' h w:where c>count each h; / matchable
+ hi:w mi:first where 0<count each m;
+ if[null mi;:hrHR];                   / nothing to match
+ rp:R ri:first m mi;                  / preferred resident
+ if[not hi in rp;:.[hrHR;(2;hi);1_]]; / resident preferences
+ if[not null ehi:r ri;                / drop existing match if worse
+  h:@[h;ehi;drop;ri];                 / drop resident from hospital match
+  H:@[H;ehi;1_];                      / drop resident from hospital prefs
+  rp:R[ri]:drop[rp;ehi]               / drop hospital from resident prefs
+  ];
  h[hi],:ri; r[ri]:hi;       / match
- R[ri]:first c:(0;1+rp?hi) cut rp;H:@[H;c 1;drop;ri];
+ R[ri]:first c:(0;1+rp?hi) cut rp; H:@[H;c 1;drop;ri]; / prune
  (h;r;H;R)}
 
 hrpr:{[C;H;R]
