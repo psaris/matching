@@ -1,5 +1,6 @@
 from matching.games import StudentAllocation
 import pandas as pd
+# import timeit
 
 # student advisor
 
@@ -20,13 +21,13 @@ students = students.dropna(subset=choices, how="all").reset_index(drop=True)
 projects = raw_projects.copy()
 projects = projects.dropna()
 projects = projects[projects["capacity"] > 0]
-#assert(len(raw_projects) == len(projects))
+# assert(len(raw_projects) == len(projects))
 
 # supervisors
 supervisors = raw_supervisors.copy()
 supervisors = supervisors.dropna()
 supervisors = supervisors[supervisors["capacity"] > 0]
-#assert(len(supervisors) == len(raw_supervisors))
+# assert(len(supervisors) == len(raw_supervisors))
 
 supervisor_names = supervisors["name"].values
 project_codes = projects["code"].values
@@ -129,25 +130,23 @@ for supervisor, supervisor_capacity in supervisor_to_capacity.items():
         supervisor_to_capacity[supervisor] = sum(supervisor_project_capacities)
 
 
-g = StudentAllocation.create_from_dictionaries(
-    student_to_preferences,
-    supervisor_to_preferences,
-    project_to_supervisor,
-    project_to_capacity,
-    supervisor_to_capacity,
-)
+def solve(opt: str):
+    g = StudentAllocation.create_from_dictionaries(
+        student_to_preferences,
+        supervisor_to_preferences,
+        project_to_supervisor,
+        project_to_capacity,
+        supervisor_to_capacity,
+    )
+    s = g.solve(optimal=opt)
+    return s
 
-#matching = g.solve(optimal="student")
-#dict(matching)
-#assert g.check_validity()
-#assert g.check_stability()
 
-matching = g.solve(optimal="supervisor")
-
-student_to_preferences
-supervisor_to_preferences
-project_to_supervisor
-project_to_capacity
-supervisor_to_capacity
-
+matching = solve(opt="student")
 dict(matching)
+
+# matching = solve(opt="supervisor")
+# dict(matching)
+
+# timeit.timeit('solve("student")', number=1, globals=globals())
+# timeit.timeit('solve("supervisor")', number=1, globals=globals())
