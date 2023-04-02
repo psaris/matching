@@ -42,5 +42,8 @@ PC&: UC PU                      / limit to project to supervisor's capacity
 UC&:sum each PC key[PU] group value[PU] / limit supervisor to sum of projects
 
 upsUS:.match.saps[PC;UC;PU;U;S]; upsUS 1
+/ entries are sorted by preference, so need to resort to compare
+all raze (asc each upsUS[1])=asc each .j.k raze read0 `:supervisor_solution.json
+
 upsUS:.match.sapu[PC;UC;PU;U;S]; upsUS 1
-all raze upsUS[1]=.j.k raze read0 `:sap.json
+all raze upsUS[1]=.j.k raze read0 `:supervisor_solution.json

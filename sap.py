@@ -141,12 +141,15 @@ def solve(opt: str):
     s = g.solve(optimal=opt)
     return s
 
+import json
 
-matching = solve(opt="student")
-dict(matching)
+sps = solve(opt="student")      # student python solution
+with open('student_solution.json','w') as f:
+    d = {str(k):[int(str(x)) for x in v] for (k,v) in sps.items()}
+    json.dump(d,f,indent=1)
 
-# matching = solve(opt="supervisor")
-# dict(matching)
+sus = solve(opt="supervisor")   # supervisor python solution
+with open('supervisor_solution.json','w') as f:
+    d = {str(k):[int(str(x)) for x in v] for (k,v) in sus.items()}
+    json.dump(d,f,indent=1)
 
-# timeit.timeit('solve("student")', number=1, globals=globals())
-# timeit.timeit('solve("supervisor")', number=1, globals=globals())
