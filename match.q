@@ -152,15 +152,22 @@ sapsa:{[pc;uc;pu;upsUS]
   ];
  (u;p;s;U;S)}
 
-
-projects:{[pc;pu;p;S;U;ui]
- pis:S sis:U ui;                / projects, students
- nm:not sis (in/:)' p pis;      / not matched projects
- um:ui = pu pis;                / supervisor matching projects
- hc:pc[pis]>(count'') p pis;    / project with capacity
- pis:pis@'where each nm&um&hc;  / potential projects
- m:raze sis (,/:)' pis;         / matches
- m}
+/ given (p)rojects (b)elow (c)apacity boolean vector, s(u)pervisors (b)elow
+/ (c)apacity vector, (p)roject to s(u)pervisor map, (p)roject matches,
+/ (S)tudent preferences, s(U)pervisor preferences and a single s(u)pervisor
+/ (i)ndex, return the s(u)pervisor's preferred (s)tudent and their preferred
+/ (p)roject (that is mapped to the supervisor) as a triplet (u;s;p). if no
+/ match is found, return the next supervisor index ui.  return an empty list
+/ if all supervisors have been exhausted.
+nextusp:{[pbc;ubc;pu;p;S;U;ui]
+ if[ui=count U;:()];                  / no more supervisors
+ if[not ubc ui;:ui+1];                / supervisor at capacity
+ pis:S sis:U ui;                      / unpack students and their projects
+ pis:pis@'where each (pbc&ui=pu) pis; / supervisor's projects with capacity
+ pis:pis@'where each not sis (in/:)' p pis;  / not already matched
+ if[not count sp:raze sis (,/:)' pis;:ui+1]; / (student;project)
+ usp:ui,first sp;                            / (supervisor;student;project)
+ usp}
 
 / given (p)roject (c)apacity, s(u)pervisor (c)apacity, (p)roject to
 / s(u)pervisor map and s(u)pervisor matches, (p)roject matches, (s)tudent
@@ -168,12 +175,13 @@ projects:{[pc;pu;p;S;U;ui]
 / supervisor-optimal match
 sapua:{[pc;uc;pu;upsUS]
  u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
- w:where uc>count each u;       / supervisors with capacity
- m:first raze w (,/:)' projects[pc;pu;p;S;U] each w;               / match
- if[not count m:raze m;:upsUS];                                    / done
- ui:m 0; sp:S si:m 1; pi: m 2;                                     / unpack
+ ubc:uc>count each u;                          / supervisors below capacity
+ pbc:pc>count each p;                          / projects below capacity
+ usp:(1=count::) nextusp[pbc;ubc;pu;p;S;U]/ 0; / iterate across supervisors
+ if[not count usp;:upsUS];                     / no further matches found
+ ui:usp 0; sp:S si:usp 1; pi: usp 2;           / unpack
  if[not null epi:s si; u:@[u;pu epi;drop;si]; p:@[p;epi;drop;si]]; / drop
- u[ui],:si;p[pi],:si;s[si]:pi;                                     / match
+ u[ui],:si; p[pi],:si; s[si]:pi;                                   / match
  if[count[sp]>i:1+sp?pi; S[si]:i#sp];                              / prune
  (u;p;s;U;S)}
 
