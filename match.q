@@ -8,7 +8,9 @@ drop:{x _ x?y}
 
 / given (e)ngagement vector and (S)uitor and (R)eviewer matrices, find next
 / engagement, remove undesirable suitors and unavailable reviewers.  a single
-/ roommate matrix is assumed if a (R)eviewer matrix is not provided.
+/ roommate matrix is assumed if a (R)eviewer matrix is not provided. referred
+/ to as phase 1 algorithm because it can be used as the first phase in the
+/ 2-phase stable roommates problem.
 phase1:{[eSR]
  n:count e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;
  si:e?0N;                       / find single suitor
@@ -22,44 +24,51 @@ phase1:{[eSR]
  eSR:.[eSR;(Si;c 1);drop;ri];         / remove unavailable reviewers
  eSR}
 
+/ given (S)uitor and (R)eviewer preference matrices, return the (e)ngagement
+/ dictionary and remaining (S)uitor and (R)eviewer preference matrix for
+/ inspection
 smp:{[S;R]
- us:key S; ur:key R;
- eSR:(count[S]#0N;ur?value S;us?value R);
- eSR:phase1 over eSR;
- eSR:(us;us;ur)!'(ur;ur;us)@'eSR;
+ us:key S; ur:key R;                      / unique suitors and reviewers
+ eSR:(count[S]#0N;ur?value S;us?value R); / initial state/enumerated values
+ eSR:phase1 over eSR; / iteratively apply Gale-Shapley algorithm (aka phase1)
+ eSR:(us;us;ur)!'(ur;ur;us)@'eSR; / map enumerations back to original values
  eSR}
 
 
 / stable roommates problem (SRP) aka Robert Irving Algorithm
 
-link:{[R;l] l,enlist (last R i;i:R[last[l] 0;1])}
+link:{[R;l] l,enlist (last R i;i:R[last[l] 0;1])} / one link in the cycle
 cycle:{[R;l]
- c:{count[x]=count distinct x} link[R]/ l;
- c:(1+c ? last c)_c;
+ c:{count[x]=count distinct x} link[R]/ l; / add links until duplicate found
+ c:(1+c ? last c)_c;                       / remove 'tail' from the cycle
  c}
 
 / mutually reject i and j
 reject:{[R;i;j]
- R[i]:first c:(0;1+r?j) cut r:R i;
- R:@[R;c 1;drop;i];
+ R[i]:first c:(0;1+r?j) cut r:R i; / drop all subsequent roommates
+ R:@[R;c 1;drop;i];                / drop match
  R}
 
+/ phase 2 of the stable roommates problem removes all cycles within the
+/ remaining candidates leaving the one true stable solution
 phase2:{[R]
- if[any 0=c:count each R;'`unstable];
- if[all 1=c;:R];
- i:(c>=2)?1b;
- c:cycle[R] enlist (i;R[i;0]);
- R:@[R;c[;0];1_];
- R:reject/[R;c[;1];-1 rotate c[;0]];
+ if[any 0=c:count each R;'`unstable]; / unable to match a roommate
+ if[all 1=c;:R];                      / all matches found
+ i:(c>=2)?1b;                  / first roommate with multiple remaining prefs
+ c:cycle[R] enlist (i;R[i;0]);       / build the cycle starting here
+ R:@[R;c[;0];1_];                    / drop the cycle matches
+ R:reject/[R;c[;1];-1 rotate c[;0]]; / prune prefs based on dropped cycle
  R}
 
+/ given a (R)oomate preference matrix return the (a)ssignment dictionary and
+/ remaining (R)oommate preference matrix for inspection
 srp:{[R]
- ur:key R;
- eR:(count[R]#0N;ur?value R);
- R:last phase1 over eR;
- R:ur phase2 scan R;
- R:enlist[ur!first each last R],R;
- R}
+ ur:key R;                      / unique roommates
+ aR:(count[R]#0N;ur?value R);   / initial assignment/enumerated values
+ R:last phase1 over aR;         / apply phase 1 and throw away assignments
+ R:ur phase2 scan R;            / apply phase 2
+ aR:enlist[ur!first each last R],R; / prepend assignment dictionary
+ aR}
 
 
 / hospital-resident problem (HRP)
