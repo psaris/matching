@@ -1,3 +1,4 @@
+\l util.q
 \l matching.q
 
 / student-allocation problem
@@ -41,9 +42,9 @@ PC&: UC PU                      / limit to project to supervisor's capacity
 
 UC&:sum each PC key[PU] group value[PU] / limit supervisor to sum of projects
 
-upsUS:.matching.saps[PC;UC;PU;U;S]; upsUS 1
+upsUS:.matching.saps[PC;UC;PU;U;S]
 / entries are sorted by preference, so need to resort to compare
-all raze (asc each upsUS[1])=asc each .j.k raze read0 `:supervisor_solution.json
+.util.assert[1b] all raze (asc each upsUS[1])=asc each .j.k raze read0 `:supervisor_solution.json
 
-upsUS:.matching.sapu[PC;UC;PU;U;S]; upsUS 1
-all raze upsUS[1]=.j.k raze read0 `:supervisor_solution.json
+upsUS:.matching.sapu[PC;UC;PU;U;S]
+.util.assert[1b] all raze upsUS[1]=.j.k raze read0 `:supervisor_solution.json

@@ -1,3 +1,4 @@
+\l util.q
 \l matching.q
 
 / hospital resident problem
@@ -16,15 +17,17 @@ H:h!(`D`L`S`J;`D`A`S`L`J;`D`J`L)
 C:h!c
 
 hrHR:.matching.hrpr[C;H;R]
-(`M`C`G!(`S`L;`A`D;1#`J);`A`S`D`L`J!`C`M`C`M`G)~2#hrHR
+.util.assert[(`M`C`G!(`S`L;`A`D;1#`J);`A`S`D`L`J!`C`M`C`M`G)] 2#hrHR
 
 hrHR:.matching.hrph[C;H;R]
-(`M`C`G!(`L`S;`D`A;1#`J);`A`S`D`L`J!`C`M`C`M`G)~2#hrHR
+.util.assert[(`M`C`G!(`L`S;`D`A;1#`J);`A`S`D`L`J!`C`M`C`M`G)] 2#hrHR
 
 R:`$.j.k raze read0`:residents.json
 H:`$.j.k raze read0`:hospitals.json
 C:.j.k raze read0`:capacities.json
-\ts:100 hrHR:.matching.hrpr[C;H;R]
-\ts:100 hrHR:.matching.hrph[C;H;R]
-30 29 30 30 27 30 24~count each value hrHR 0
-0b~any null hrHR 1
+hrHR:.matching.hrpr[C;H;R]
+.util.assert[30 29 30 30 27 30 24] count each value hrHR 0
+.util.assert[0b] any null hrHR 1
+hrHR:.matching.hrph[C;H;R]
+.util.assert[30 29 30 30 27 30 24] count each value hrHR 0
+.util.assert[0b] any null hrHR 1
