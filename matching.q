@@ -1,4 +1,4 @@
-\d .match
+\d .matching
 
 / drop first occurrence of x from y
 drop:{x _ x?y}
