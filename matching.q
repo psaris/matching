@@ -6,9 +6,10 @@ drop:{x _ x?y}
 
 / stable marriage problem (SMP) aka Gale-Shapley algorithm
 
-/ given (e)ngagement vector and (S)uitor and (R)eviewer matrices, find next
-/ engagement, remove undesirable suitors and unavailable reviewers.  a single
-/ roommate matrix is assumed if a (R)eviewer matrix is not provided.
+/ given (e)ngagement vector and (S)uitor and (R)eviewer preferences, find
+/ next engagement, remove undesirable suitors and unavailable reviewers.
+/ roommate preferences are assumed if (R)eviewer preferences are not
+/ provided.
 smpa:{[eSR]
  n:count e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;
  if[n=si:e?0N;:eSR];            / everyone is engaged
@@ -21,9 +22,8 @@ smpa:{[eSR]
  eSR:.[eSR;(Si;c 1);drop;ri];         / remove unavailable reviewers
  eSR}
 
-/ given (S)uitor and (R)eviewer preference matrices, return the (e)ngagement
-/ dictionary and remaining (S)uitor and (R)eviewer preference matrix for
-/ inspection
+/ given (S)uitor and (R)eviewer preferences, return the (e)ngagement
+/ dictionary and remaining (S)uitor and (R)eviewer preferences for inspection
 smp:{[S;R]
  us:key S; ur:key R;                      / unique suitors and reviewers
  eSR:(count[S]#0N;ur?value S;us?value R); / initial state/enumerated values
@@ -58,8 +58,8 @@ decycle:{[R]
  R:reject/[R;c[;1];-1 rotate c[;0]]; / prune prefs based on dropped cycle
  R}
 
-/ given a (R)oomate preference matrix return the (a)ssignment dictionary and
-/ remaining (R)oommate preference matrix for inspection
+/ given (R)oomate preferences, return the (a)ssignment dictionary and
+/ remaining (R)oommate preferences
 srp:{[R]
  ur:key R;                      / unique roommates
  aR:(count[R]#0N;ur?value R);   / initial assignment/enumerated values
@@ -72,8 +72,7 @@ srp:{[R]
 / hospital-resident problem (HRP)
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
-/ (H)ospital and (R)esident preference matrices, find next resident-optimal
-/ match
+/ (H)ospital and (R)esident preferences, find next resident-optimal match
 hrpra:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
  if[null ri:first where null[r]&0<count each R;:hrHR]; / nothing to match
@@ -96,8 +95,7 @@ hrpra:{[c;hrHR]
  (h;r;H;R)}
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
-/ (H)ospital and (R)esident preference matrices, find next hospital-optimal
-/ match
+/ (H)ospital and (R)esident preferences, find next hospital-optimal match
 hrpha:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
  m:H[w] except' h w:where c>count each h; / matchable
