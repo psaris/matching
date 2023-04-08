@@ -14,12 +14,12 @@ smpa:{[eSR]
  n:count e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;
  if[n=si:e?0N;:eSR];            / everyone is engaged
  if[any 0=count each S;'`unstable];
- r:R ri:first s:S si;    / find preferred reviewer
+ rp:R ri:first s:S si;          / find preferred reviewer's preferences
  / if already engaged, and this suitor is better, renege
- if[not n=ei:e?ri;if[(</)r?(si;ei);eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
- e[si]:ri; eSR[0]:e;                  / get engaged
- eSR[Ri;ri]:first c:(0;1+r?si) cut r; / remove undesirable suitors
- eSR:.[eSR;(Si;c 1);drop;ri];         / remove unavailable reviewers
+ if[not n=ei:e?ri;if[(</)rp?(si;ei);eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
+ e[si]:ri; eSR[0]:e;                    / get engaged
+ eSR[Ri;ri]:first c:(0;1+rp?si) cut rp; / remove undesirable suitors
+ eSR:.[eSR;(Si;c 1);drop;ri];           / remove unavailable reviewers
  eSR}
 
 / given (S)uitor and (R)eviewer preferences, return the (e)ngagement
