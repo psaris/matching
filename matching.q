@@ -58,14 +58,21 @@ decycle:{[R]
  R:reject/[R;c[;1];-1 rotate c[;0]]; / prune prefs based on dropped cycle
  R}
 
-/ given (R)oomate preferences, return the (a)ssignment dictionary and
-/ remaining (R)oommate preferences
+/ given (a)ssignment vector and (R)oomate preferences, return the completed
+/ (a)ssignment vector (R)oommate preferences from each decycle stage
+srpa:{[aR]
+ R:last smpa over aR;           / apply phase 1 and throw away assignments
+ R:decycle scan R;              / apply phase 2
+ aR:enlist[last[R][;0]],R;      / prepend assignment vector
+ aR}
+
+/ given (R)oomate preference dictionary, return the (a)ssignment dictionary
+/ and (R)oommate preference dictionaries from each decycle stage
 srp:{[R]
  ur:key R;                      / unique roommates
  aR:(count[R]#0N;ur?value R);   / initial assignment/enumerated values
- R:last smpa over aR;           / apply phase 1 and throw away assignments
- R:ur!/:ur decycle scan R;      / apply phase 2
- aR:enlist[last[R][;0]],R;      / prepend assignment dictionary
+ aR:srpa aR;                    / apply stable roommate problem algorithm
+ aR:ur!/:ur aR;                 / map enumerations back to original values
  aR}
 
 
