@@ -34,11 +34,12 @@ smp:{[S;R]
 
 / stable roommates problem (SRP) aka Robert Irving 1985 algorithm
 
-link:{[R;l] l,enlist (last R i;i:R[last[l] 0;1])} / one link in the cycle
+/ given (R)oommate preferences and cycle (c)hain, add next link
+link:{[R;c] c,enlist (last R i;i:R[last[c] 0;1])}
 
-cycle:{[R;l]
- c:{count[x]=count distinct x} link[R]/ l; / add links until duplicate found
- c:(1+c ? last c)_c;                       / remove 'tail' from the cycle
+cycle:{[R;c]
+ c:{count[x]=count distinct x} link[R]/ c; / add links until duplicate found
+ c:(1+c ? last c)_c;                       / remove 'tail' from the chain
  c}
 
 / mutually reject i and j
