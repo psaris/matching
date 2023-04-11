@@ -37,13 +37,15 @@ smp:{[S;R]
 / given (R)oommate preferences and cycle (c)hain, add next link
 link:{[R;c] c,enlist (last R i;i:R[last[c] 0;1])}
 
+/ given (R)oommate preferences and initial cycle (c)hain, add links until a
+/ duplicate is found
 cycle:{[R;c]
- c:{count[x]=count distinct x} link[R]/ c; / add links until duplicate found
- c:(1+c ? last c)_c;                       / remove 'tail' from the chain
+ c:{$[1=count x;1b;not last[x] in -1_x]} link[R]/ c;
+ c:(1+c ? last c)_c;            / remove 'tail' from the chain
  c}
 
-/ mutually reject i and j
-reject:{[R;i;j]
+/ mutually prune i and j from (R)oommate preferences
+prune:{[R;i;j]
  R[i]:first c:(0;1+r?j) cut r:R i; / drop all subsequent roommates
  R:@[R;c 1;drop;i];                / drop match
  R}
