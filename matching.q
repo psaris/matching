@@ -3,6 +3,18 @@
 / drop first occurrence of x from y
 drop:{x _ x?y}
 
+/ given (r)eviewer (p)refs, (S)uiter preferences and (s)uitor (i)ndice(s) and
+/ (r)eviewer (i)ndice(s), return the pruned reviewer and Suitor prefs
+prune:{[rp;S;ris;sis]
+ if[count[rp]=i:1+max rp?sis;:(rp;S)]; / return early if nothing to do
+ rp:first c:(0;i) cut rp;              / drop worse suitors from preferences
+ S:@[;last c;drop;]/[S;ris];           / drop reviewers from worse suitors
+ (rp;S)}
+
+/ given (R)oommate preferences and (r)eviewer and (s)uitor indices, return
+/ the pruned Roommate preferences
+pruner:{[R;ri;si]@[last rpR;ri;:;first rpR:prune[R ri;R;ri;si]]}
+
 
 / stable marriage problem (SMP) aka Gale-Shapley algorithm
 
@@ -17,9 +29,9 @@ smpa:{[eSR]
  rp:R ri:first s:S si;          / find preferred reviewer's preferences
  / if already engaged, and this suitor is better, renege
  if[not n=ei:e?ri;if[(</)rp?(si;ei);eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
- e[si]:ri; eSR[0]:e;                    / get engaged
- eSR[Ri;ri]:first c:(0;1+rp?si) cut rp; / remove undesirable suitors
- eSR:.[eSR;(Si;c 1);drop;ri];           / remove unavailable reviewers
+ e[si]:ri; eSR[0]:e;                      / get engaged
+ eSR[Si]:last rpS:prune[rp;eSR Si;ri;si]; / first replace suitor prefers
+ eSR[Ri;ri]:first rpS;                    / order matters when used for SRP
  eSR}
 
 / given (S)uitor and (R)eviewer preferences, return the (e)ngagement
@@ -44,12 +56,6 @@ cycle:{[R;c]
  c:(1+c ? last c)_c;            / remove 'tail' from the chain
  c}
 
-/ mutually prune i and j from (R)oommate preferences
-prune:{[R;i;j]
- R[i]:first c:(0;1+r?j) cut r:R i; / drop all subsequent roommates
- R:@[R;c 1;drop;i];                / drop match
- R}
-
 / phase 2 of the stable roommates problem removes all cycles within the
 / remaining candidates leaving the one true stable solution
 decycle:{[R]
@@ -57,7 +63,7 @@ decycle:{[R]
  if[count[c]=i:(c>1)?1b;:R];          / first roommate with multiple prefs
  c:cycle[R] enlist (i;R[i;0]);        / build the cycle starting here
  R:@[R;c[;0];1_];                     / drop the cycle matches
- R:prune/[R;c[;1];-1 rotate c[;0]];   / prune prefs based on dropped cycle
+ R:pruner/[R;c[;1];-1 rotate c[;0]];  / prune prefs based on dropped cycle
  R}
 
 / given (a)ssignment vector and (R)oomate preferences, return the completed
@@ -95,12 +101,7 @@ hrpra:{[c;hrHR]
   R:@[R;wri;1_];                    / drop hospital from resident prefs
   r[wri]:0N;                        / drop resident match
   ];
- if[ch=c hi;                    / prune worst residents from consideration
-  if[count[hp]>i:1+max hp?ris;
-   H[hi]:first c:(0;i) cut hp;  / drop residents from hospital prefs
-   R:@[R;c 1;drop;hi]           / drop hospital from resident prefs
-   ];
-  ];
+ if[ch=c hi; H[hi]:first hpR:prune[hp;R;hi;ris]; R:last hpR]; / prune
  (h;r;H;R)}
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
@@ -117,8 +118,8 @@ hrpha:{[c;hrHR]
   H:@[H;ehi;1_];                      / drop resident from hospital prefs
   rp:R[ri]:drop[rp;ehi]               / drop hospital from resident prefs
   ];
- h[hi],:ri; r[ri]:hi;                                  / match
- R[ri]:first c:(0;1+rp?hi) cut rp; H:@[H;c 1;drop;ri]; / prune
+ h[hi],:ri; r[ri]:hi;                           / match
+ R[ri]:first rpH:prune[rp;H;ri;hi]; H:last rpH; / prune
  (h;r;H;R)}
 
 / hospital resident problem wrapper function that enumerates the inputs,
@@ -157,13 +158,8 @@ sapsa:{[pc;uc;pu;upsUS]
   cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
   s[wsi]:0N;                          / remove match
   ];
- if[cp=pc pi;if[count[up]>i:1+max up?psis; S:@[S;i _ up;drop;pi]]]; / prune
- if[cu=uc ui;
-  if[count[up]>i:1+max up?usis;
-   U[ui]:first c:(0;i) cut up;
-   S:@[;c 1;drop;]/[S;where pu = ui];
-   ];
-  ];
+ if[cp=pc pi;S:last prune[up;S;pi;psis]]; / prune
+ if[cu=uc ui;U[ui]:first upS:prune[up;S;where pu=ui;usis]; S:last upS];
  (u;p;s;U;S)}
 
 / given (p)rojects (b)elow (c)apacity boolean vector, s(u)pervisors (b)elow
@@ -196,7 +192,7 @@ sapua:{[pc;uc;pu;upsUS]
  ui:usp 0; sp:S si:usp 1; pi: usp 2;           / unpack
  if[not null epi:s si; u:@[u;pu epi;drop;si]; p:@[p;epi;drop;si]]; / drop
  u[ui],:si; p[pi],:si; s[si]:pi;                                   / match
- if[count[sp]>i:1+sp?pi; S[si]:i#sp];                              / prune
+ S[si]:first prune[sp;U;();pi];                                    / prune
  (u;p;s;U;S)}
 
 / student allocation problem wrapper function that enumerates the inputs,
