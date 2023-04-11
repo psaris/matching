@@ -54,11 +54,10 @@ prune:{[R;i;j]
 / remaining candidates leaving the one true stable solution
 decycle:{[R]
  if[any 0=c:count each R;'`unstable]; / unable to match a roommate
- if[all 1=c;:R];                      / all matches found
- i:(c>=2)?1b;                  / first roommate with multiple remaining prefs
- c:cycle[R] enlist (i;R[i;0]);       / build the cycle starting here
- R:@[R;c[;0];1_];                    / drop the cycle matches
- R:reject/[R;c[;1];-1 rotate c[;0]]; / prune prefs based on dropped cycle
+ if[count[c]=i:(c>1)?1b;:R];          / first roommate with multiple prefs
+ c:cycle[R] enlist (i;R[i;0]);        / build the cycle starting here
+ R:@[R;c[;0];1_];                     / drop the cycle matches
+ R:prune/[R;c[;1];-1 rotate c[;0]];   / prune prefs based on dropped cycle
  R}
 
 / given (a)ssignment vector and (R)oomate preferences, return the completed
