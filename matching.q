@@ -62,7 +62,6 @@ decycle:{[R]
  if[any 0=c:count each R;'`unstable]; / unable to match a roommate
  if[count[c]=i:(c>1)?1b;:R];          / first roommate with multiple prefs
  c:cycle[R] enlist (i;R[i;0]);        / build the cycle starting here
- R:@[R;c[;0];1_];                     / drop the cycle matches
  R:pruner/[R;c[;1];-1 rotate c[;0]];  / prune prefs based on dropped cycle
  R}
 
