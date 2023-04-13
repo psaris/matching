@@ -194,7 +194,7 @@ sapua:{[pc;uc;pu;upsUS]
  S[si]:first prune[sp;U;();pi];                                    / prune
  (u;p;s;U;S)}
 
-/ student allocation problem wrapper function that enumerates the inputs,
+/ student-allocation problem wrapper function that enumerates the inputs,
 / calls the sap function and unenumerates the results
 sapw:{[sapf;PC;UC;PU;U;S]
  up:key PU; uu:key U; us:key S; / unique project, supervisors and students
