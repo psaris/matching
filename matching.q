@@ -97,8 +97,6 @@ hrpra:{[c;hrHR]
  if[ch>c hi;                              / over capacity
   wri:hp max hp?ris;                      / worst resident
   ch:count ris:h[hi]:drop[ris;wri]; / drop resident from hospital match
-  hp:H[hi]:drop[hp;wri];            / drop resident from hospital prefs
-  R:@[R;wri;1_];                    / drop hospital from resident prefs
   r[wri]:0N;                        / drop resident match
   ];
  if[ch=c hi; H[hi]:first hpR:prune[hp;R;hi;ris]; R:last hpR]; / prune
@@ -113,11 +111,7 @@ hrpha:{[c;hrHR]
  if[mi=count w;:hrHR];                      / nothing to match
  rp:R ri:first m mi; hi:w mi;               / preferred resident
  if[not hi in rp;:.[hrHR;(2;hi);1_]];       / resident preferences
- if[not null ehi:r ri;          / drop existing match if worse
-  h:@[h;ehi;drop;ri];           / drop resident from hospital match
-  H:@[H;ehi;1_];                / drop resident from hospital prefs
-  rp:R[ri]:drop[rp;ehi]         / drop hospital from resident prefs
-  ];
+ if[not null ehi:r ri; h:@[h;ehi;drop;ri]]; / drop existing match
  h[hi],:ri; r[ri]:hi;                           / match
  R[ri]:first rpH:prune[rp;H;ri;hi]; H:last rpH; / prune
  (h;r;H;R)}
@@ -153,7 +147,7 @@ sapsa:{[pc;uc;pu;upsUS]
   cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
   s[wsi]:0N;                          / remove match
   ];
- if[cu>uc ui;                / supervisor over capacity
+ if[cu>uc ui;                         / supervisor over capacity
   wsi:up max up?usis;                 / worst student
   p:@[p;s wsi;drop;wsi];              / drop from project
   cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
