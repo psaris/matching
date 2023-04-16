@@ -142,16 +142,14 @@ sapsa:{[pc;uc;pu;upsUS]
  up:U ui:pu pi:first S si:w mi; / preferred project's supervisors preferences
  cu:count usis:u[ui],:si;cp:count psis:p[pi],:si;s[si]:pi; / match
  if[cp>pc pi;                         / project over capacity
-  wsi:up max up?psis;                 / worst student
+  wsi:up max up?psis; s[wsi]:0N;      / worst student
   cp:count psis:p[pi]:drop[psis;wsi]; / drop from project
   cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
-  s[wsi]:0N;                          / remove match
   ];
  if[cu>uc ui;                         / supervisor over capacity
   wsi:up max up?usis;                 / worst student
-  p:@[p;s wsi;drop;wsi];              / drop from project
+  p:@[p;s wsi;drop;wsi]; s[wsi]:0N;   / drop from other project
   cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
-  s[wsi]:0N;                          / remove match
   ];
  if[cp=pc pi;S:last prune[up;S;pi;psis]]; / prune
  if[cu=uc ui;U[ui]:first upS:prune[up;S;where pu=ui;usis]; S:last upS];
