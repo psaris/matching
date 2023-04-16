@@ -22,12 +22,12 @@ hrHR:.matching.hrpr[C;H;R]
 hrHR:.matching.hrph[C;H;R]
 .util.assert[(`M`C`G!(`L`S;`D`A;1#`J);`A`S`D`L`J!`C`M`C`M`G)] 2#hrHR
 
-R:`$.j.k raze read0`:residents.json
-H:`$.j.k raze read0`:hospitals.json
-C:.j.k raze read0`:capacities.json
+R:`$.j.k raze read0 `:residents.json
+H:`$.j.k raze read0 `:hospitals.json
+C:.j.k raze read0 `:capacities.json
 hrHR:.matching.hrpr[C;H;R]
-.util.assert[30 29 30 30 27 30 24] count each value hrHR 0
-.util.assert[0b] any null hrHR 1
+hrHR[0]:H[key hrHR 0]{y iasc x?y}' hrHR 0 / resort by hospital prefs
+.util.assert[1b] all raze hrHR[0]=`$.j.k raze read0 `:resident_solution.json
+
 hrHR:.matching.hrph[C;H;R]
-.util.assert[30 29 30 30 27 30 24] count each value hrHR 0
-.util.assert[0b] any null hrHR 1
+.util.assert[1b] all raze hrHR[0]=`$.j.k raze read0 `:hospital_solution.json
