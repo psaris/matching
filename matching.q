@@ -89,12 +89,13 @@ srp:{[R]
 / (H)ospital and (R)esident preferences, find next resident-optimal match
 hrpra:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
- if[count[r]=ri:?[;1b] null[r]&0<count each R;:hrHR]; / nothing to match
- hp:H hi:first R ri;                                  / preferred hospital
- if[not ri in hp;:.[hrHR;(3;ri);1_]];                 / hospital rejects
- ch:count ris:h[hi],:ri; r[ri]:hi;                    / match
- if[ch>c hi;                                          / over capacity
-  wri:hp max hp?ris;                                  / worst resident
+ mi:?[;1b] 0<count each R w:where null r; / first unmatched with prefs
+ if[mi=count w;:hrHR];                    / nothing to match
+ hp:H hi:first R ri:w mi;                 / preferred hospital
+ if[not ri in hp;:.[hrHR;(3;ri);1_]];     / hospital rejects
+ ch:count ris:h[hi],:ri; r[ri]:hi;        / match
+ if[ch>c hi;                              / over capacity
+  wri:hp max hp?ris;                      / worst resident
   ch:count ris:h[hi]:drop[ris;wri]; / drop resident from hospital match
   hp:H[hi]:drop[hp;wri];            / drop resident from hospital prefs
   R:@[R;wri;1_];                    / drop hospital from resident prefs
@@ -108,10 +109,10 @@ hrpra:{[c;hrHR]
 hrpha:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
  w:where c>count each h;        / limit to hospitals with capacity
- hi:w mi:?[;1b] 0<count each m:H[w] except' h w; / first with unmatched prefs
- if[count[m]=mi;:hrHR];                          / nothing to match
- rp:R ri:first m mi;                             / preferred resident
- if[not hi in rp;:.[hrHR;(2;hi);1_]];            / resident preferences
+ mi:?[;1b] 0<count each m:H[w] except' h w; / first with unmatched prefs
+ if[mi=count w;:hrHR];                      / nothing to match
+ rp:R ri:first m mi; hi:w mi;               / preferred resident
+ if[not hi in rp;:.[hrHR;(2;hi);1_]];       / resident preferences
  if[not null ehi:r ri;          / drop existing match if worse
   h:@[h;ehi;drop;ri];           / drop resident from hospital match
   H:@[H;ehi;1_];                / drop resident from hospital prefs
@@ -142,8 +143,9 @@ hrph:hrpw[hrpha]               / hospital resident problem (hospital-optimal)
 / student-optimal match
 sapsa:{[pc;uc;pu;upsUS]
  u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
- if[count[s]=si:?[;1b] null[s]&0<count each S;:upsUS]; / nothing to match
- up:U ui:pu pi:first S si;      / preferred project's supervisors preferences
+ mi:?[;1b] 0<count each S w:where null s; / first unmatched student
+ if[mi=count w;:upsUS];                   / nothing to match
+ up:U ui:pu pi:first S si:w mi; / preferred project's supervisors preferences
  cu:count usis:u[ui],:si;cp:count psis:p[pi],:si;s[si]:pi; / match
  if[cp>pc pi;                         / project over capacity
   wsi:up max up?psis;                 / worst student
