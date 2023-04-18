@@ -1,6 +1,5 @@
 import json
-import urllib
-# import timeit
+import urllib.request
 import yaml
 from matching.games import HospitalResident
 
@@ -28,10 +27,11 @@ H = dict(zip(h, [['D', 'L', 'S', 'J'],
 C = dict(zip(h, c))
 
 g = hrp(R, H, C)
-print(g.solve(optimal='resident'))
+hs = {k.name:[x.name for x in v] for (k,v) in  g.solve(optimal='resident').items()}
 
 g = hrp(R, H, C)
-print(g.solve(optimal='hospital'))
+rs = {k.name:[x.name for x in v] for (k,v) in g.solve(optimal='hospital').items()}
+assert(hs == rs)
 
 for f in ['capacities', 'hospitals', 'residents']:
     url = f"https://zenodo.org/record/3688091/files/{f}.yml"
@@ -45,15 +45,18 @@ with (open('capacities.json', 'r') as c,
     H = json.load(h)
     C = json.load(c)
 
-
 def solve(opt: str):
     g = hrp(R, H, C)
     s = g.solve(optimal=opt)
     return s
 
 
-s = solve('hospital')
-s = solve('resident')
+hps = solve('hospital')         # hospital python solution
+with open('hospital_solution.json','w') as f:
+    d = {k.name:[x.name for x in v] for (k,v) in hps.items()}
+    json.dump(d,f,indent=1)
 
-# timeit.timeit('solve("resident")', number=100,globals=globals())
-# timeit.timeit('solve("hospital")', number=100,globals=globals())
+rps = solve('resident')         # resident python solution
+with open('resident_solution.json','w') as f:
+    d = {k.name:[x.name for x in v] for (k,v) in rps.items()}
+    json.dump(d,f,indent=1)
