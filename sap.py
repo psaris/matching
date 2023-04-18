@@ -1,6 +1,6 @@
 from matching.games import StudentAllocation
 import pandas as pd
-# import timeit
+import json
 
 # student advisor
 
@@ -21,13 +21,13 @@ students = students.dropna(subset=choices, how="all").reset_index(drop=True)
 projects = raw_projects.copy()
 projects = projects.dropna()
 projects = projects[projects["capacity"] > 0]
-# assert(len(raw_projects) == len(projects))
+# assert len(raw_projects) == len(projects)
 
 # supervisors
 supervisors = raw_supervisors.copy()
 supervisors = supervisors.dropna()
 supervisors = supervisors[supervisors["capacity"] > 0]
-# assert(len(supervisors) == len(raw_supervisors))
+# assert len(supervisors) == len(raw_supervisors)
 
 supervisor_names = supervisors["name"].values
 project_codes = projects["code"].values
@@ -89,7 +89,7 @@ unranked_projects = set(project_codes).difference(
     (project for prefs in student_to_preferences.values() for project in prefs)
 )
 
-# assert((set(), {'L1'}) == (unranked_supervisors, unranked_projects))
+# assert (set(), {'L1'}) == (unranked_supervisors, unranked_projects)
 
 for supervisor in unranked_supervisors:
     if supervisor in supervisor_to_capacity:
@@ -123,9 +123,9 @@ for supervisor, supervisor_capacity in supervisor_to_capacity.items():
 
     if supervisor_capacity > sum(supervisor_project_capacities):
         print(
-            f"{supervisor} has capacity {supervisor_capacity} but their projects",
-            f"{', '.join(supervisor_projects)} have a total capacity of",
-            f"{sum(supervisor_project_capacities)}.",
+            f"{supervisor} has capacity {supervisor_capacity} ',",
+            f"but their projects {', '.join(supervisor_projects)}",
+            f" have a total capacity of {sum(supervisor_project_capacities)}."
         )
         supervisor_to_capacity[supervisor] = sum(supervisor_project_capacities)
 
@@ -141,15 +141,13 @@ def solve(opt: str):
     s = g.solve(optimal=opt)
     return s
 
-import json
 
 sps = solve(opt="student")      # student python solution
-with open('student_solution.json','w') as f:
-    d = {str(k):[int(str(x)) for x in v] for (k,v) in sps.items()}
-    json.dump(d,f,indent=1)
+with open('student_solution.json', 'w') as f:
+    d = {k.name: [x.name for x in v] for (k, v) in sps.items()}
+    json.dump(d, f, indent=1)
 
 sus = solve(opt="supervisor")   # supervisor python solution
-with open('supervisor_solution.json','w') as f:
-    d = {str(k):[int(str(x)) for x in v] for (k,v) in sus.items()}
-    json.dump(d,f,indent=1)
-
+with open('supervisor_solution.json', 'w') as f:
+    d = {k.name: [x.name for x in v] for (k, v) in sus.items()}
+    json.dump(d, f, indent=1)

@@ -27,11 +27,14 @@ H = dict(zip(h, [['D', 'L', 'S', 'J'],
 C = dict(zip(h, c))
 
 g = hrp(R, H, C)
-hs = {k.name:[x.name for x in v] for (k,v) in  g.solve(optimal='resident').items()}
+hs = {k.name: [x.name for x in v]
+      for (k, v) in g.solve(optimal='resident').items()}
 
 g = hrp(R, H, C)
-rs = {k.name:[x.name for x in v] for (k,v) in g.solve(optimal='hospital').items()}
-assert(hs == rs)
+rs = {k.name: [x.name for x in v]
+      for (k, v) in g.solve(optimal='hospital').items()}
+
+assert hs == rs
 
 for f in ['capacities', 'hospitals', 'residents']:
     url = f"https://zenodo.org/record/3688091/files/{f}.yml"
@@ -45,6 +48,7 @@ with (open('capacities.json', 'r') as c,
     H = json.load(h)
     C = json.load(c)
 
+
 def solve(opt: str):
     g = hrp(R, H, C)
     s = g.solve(optimal=opt)
@@ -52,11 +56,11 @@ def solve(opt: str):
 
 
 hps = solve('hospital')         # hospital python solution
-with open('hospital_solution.json','w') as f:
-    d = {k.name:[x.name for x in v] for (k,v) in hps.items()}
-    json.dump(d,f,indent=1)
+with open('hospital_solution.json', 'w') as f:
+    d = {k.name: [x.name for x in v] for (k, v) in hps.items()}
+    json.dump(d, f, indent=1)
 
 rps = solve('resident')         # resident python solution
-with open('resident_solution.json','w') as f:
-    d = {k.name:[x.name for x in v] for (k,v) in rps.items()}
-    json.dump(d,f,indent=1)
+with open('resident_solution.json', 'w') as f:
+    d = {k.name: [x.name for x in v] for (k, v) in rps.items()}
+    json.dump(d, f, indent=1)
