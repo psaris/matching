@@ -24,11 +24,12 @@ pruner:{[R;ri;si]@[last rpR;ri;:;first rpR:prune[R ri;R;ri;si]]}
 / provided.
 smpa:{[eSR]
  n:count e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;
- if[n=si:e?0N;:eSR];            / everyone is engaged
- if[any 0=count each S;'`unstable];
- rp:R ri:first s:S si;          / find preferred reviewer's preferences
- / if already engaged, and this suitor is better, renege
- if[not n=ei:e?ri;if[(</)rp?(si;ei);eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
+ mi:?[;1b] 0<count each S w:where null e;    / first unmatched with prefs
+ if[mi=count w;:eSR];                        / no unmatched suitor
+ rp:R ri:first s:S si:w mi;                  / preferred reviewer's prefs
+ if[count[rp]=sir:rp?si;:.[eSR;(Si;si);1_]]; / not on reviewer's list
+ / renege if already engaged and this suitor is better
+ if[not n=ei:e?ri;if[sir<rp?ei;eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
  e[si]:ri; eSR[0]:e;                      / get engaged
  eSR[Si]:last rpS:prune[rp;eSR Si;ri;si]; / first replace suitor prefers
  eSR[Ri;ri]:first rpS;                    / order matters when used for SRP
