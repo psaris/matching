@@ -1,7 +1,7 @@
 \l util.q
 \l matching.q
 
-/ student-allocation problem
+/ student-allocation (SA) problem
 
 / https://matching.readthedocs.io/en/latest/discussion/student_allocation/index.html
 
@@ -37,9 +37,9 @@ preprocess:{[u;p;s]
  d}
 
 d:preprocess[u;p;s]
-upsUS:.matching.saps . d`PC`UC`PU`U`S
+upsUS:.matching.sas . d`PC`UC`PU`U`S
 upsUS[1]:d[`U][d[`PU] key upsUS 1]{y iasc x?y}' upsUS 1 / sort by u's prefs
 .util.assert[1b] all raze upsUS[1]= .j.k raze read0 `:student_solution.json
 
-upsUS:.matching.sapu . d`PC`UC`PU`U`S
+upsUS:.matching.sau . d`PC`UC`PU`U`S
 .util.assert[1b] all raze upsUS[1]=.j.k raze read0 `:supervisor_solution.json

@@ -16,13 +16,13 @@ prune:{[rp;S;ris;sis]
 pruner:{[R;ri;si]@[last rpR;ri;:;first rpR:prune[R ri;R;ri;si]]}
 
 
-/ stable marriage problem (SMP) aka Gale-Shapley algorithm
+/ stable marriage (SM) problem aka Gale-Shapley algorithm
 
 / given (e)ngagement vector and (S)uitor and (R)eviewer preferences, find
 / next engagement, remove undesirable suitors and unavailable reviewers.
 / roommate preferences are assumed if (R)eviewer preferences are not
 / provided.
-smpa:{[eSR]
+sma:{[eSR]
  n:count e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;
  mi:?[;1b] 0<count each S w:where null e;    / first unmatched with prefs
  if[mi=count w;:eSR];                        / no unmatched suitor
@@ -32,20 +32,20 @@ smpa:{[eSR]
  if[not n=ei:e?ri;if[sir<rp?ei;eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
  e[si]:ri; eSR[0]:e;                      / get engaged
  eSR[Si]:last rpS:prune[rp;eSR Si;ri;si]; / first replace suitor prefers
- eSR[Ri;ri]:first rpS;                    / order matters when used for SRP
+ eSR[Ri;ri]:first rpS;                    / order matters when used for SR
  eSR}
 
 / given (S)uitor and (R)eviewer preferences, return the (e)ngagement
 / dictionary and remaining (S)uitor and (R)eviewer preferences for inspection
-smp:{[S;R]
+sm:{[S;R]
  us:key S; ur:key R;                      / unique suitors and reviewers
  eSR:(count[S]#0N;ur?value S;us?value R); / initial state/enumerated values
- eSR:smpa over eSR;               / iteratively apply Gale-Shapley algorithm
+ eSR:sma over eSR;                / iteratively apply Gale-Shapley algorithm
  eSR:(us;us;ur)!'(ur;ur;us)@'eSR; / map enumerations back to original values
  eSR}
 
 
-/ stable roommates problem (SRP) aka Robert Irving 1985 algorithm
+/ stable roommates (SR) problem aka Robert Irving 1985 algorithm
 
 / given (R)oommate preferences and cycle (c)hain, add next link
 link:{[R;c] c,enlist (last R i;i:R[last[c] 0;1])}
@@ -57,7 +57,7 @@ cycle:{[R;c]
  c:(1+c ? last c)_c;            / remove 'tail' from the chain
  c}
 
-/ phase 2 of the stable roommates problem removes all cycles within the
+/ phase 2 of the stable roommates (SR) problem removes all cycles within the
 / remaining candidates leaving the one true stable solution
 decycle:{[R]
  if[any 0=c:count each R;'`unstable]; / unable to match a roommate
@@ -68,27 +68,27 @@ decycle:{[R]
 
 / given (a)ssignment vector and (R)oomate preferences, return the completed
 / (a)ssignment vector (R)oommate preferences from each decycle stage
-srpa:{[aR]
- R:last smpa over aR;           / apply phase 1 and throw away assignments
+sra:{[aR]
+ R:last sma over aR;            / apply phase 1 and throw away assignments
  R:decycle scan R;              / apply phase 2
  aR:enlist[last[R][;0]],R;      / prepend assignment vector
  aR}
 
 / given (R)oomate preference dictionary, return the (a)ssignment dictionary
 / and (R)oommate preference dictionaries from each decycle stage
-srp:{[R]
+sr:{[R]
  ur:key R;                      / unique roommates
  aR:(count[R]#0N;ur?value R);   / initial assignment/enumerated values
- aR:srpa aR;                    / apply stable roommate problem algorithm
+ aR:sra aR;                     / apply stable roommate (SR) algorithm
  aR:ur!/:ur aR;                 / map enumerations back to original values
  aR}
 
 
-/ hospital-resident problem (HRP)
+/ hospital-resident (HR) problem
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
 / (H)ospital and (R)esident preferences, find next resident-optimal match
-hrpra:{[c;hrHR]
+hrra:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
  mi:?[;1b] 0<count each R w:where null r; / first unmatched with prefs
  if[mi=count w;:hrHR];                    / nothing to match
@@ -105,7 +105,7 @@ hrpra:{[c;hrHR]
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
 / (H)ospital and (R)esident preferences, find next hospital-optimal match
-hrpha:{[c;hrHR]
+hrha:{[c;hrHR]
  h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
  w:where c>count each h;        / limit to hospitals with capacity
  mi:?[;1b] 0<count each m:H[w] except' h w; / first with unmatched prefs
@@ -117,26 +117,26 @@ hrpha:{[c;hrHR]
  R[ri]:first rpH:prune[rp;H;ri;hi]; H:last rpH; / prune
  (h;r;H;R)}
 
-/ hospital resident problem wrapper function that enumerates the inputs,
-/ calls the hrp function and unenumerates the results
-hrpw:{[hrpf;C;H;R]
+/ hospital resident (HR) problem wrapper function that enumerates the inputs,
+/ calls the hr function and unenumerates the results
+hrw:{[hrf;C;H;R]
  uh:key H; ur:key R;
  hrHR:((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
- hrHR:hrpf[C uh] over hrHR;
+ hrHR:hrf[C uh] over hrHR;
  hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
  hrHR}
 
-hrpr:hrpw[hrpra]               / hospital resident problem (resident-optimal)
-hrph:hrpw[hrpha]               / hospital resident problem (hospital-optimal)
+hrr:hrw[hrra]                  / hospital resident (resident-optimal)
+hrh:hrw[hrha]                  / hospital resident (hospital-optimal)
 
 
-/ student-allocation problem (SAP)
+/ student-allocation (SA) problem
 
 / given (p)roject (c)apacity, s(u)pervisor (c)apacity, (p)roject to
 / s(u)pervisor map and s(u)pervisor matches, (p)roject matches, (s)tudent
 / matches, s(U)pervisor preferences and (S)tudent preferences, find next
 / student-optimal match
-sapsa:{[pc;uc;pu;upsUS]
+sasa:{[pc;uc;pu;upsUS]
  u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
  mi:?[;1b] 0<count each S w:where null s; / first unmatched student
  if[mi=count w;:upsUS];                   / nothing to match
@@ -177,7 +177,7 @@ nextusp:{[pbc;ubc;pu;p;S;U;ui]
 / s(u)pervisor map and s(u)pervisor matches, (p)roject matches, (s)tudent
 / matches, s(U)pervisor preferences and (S)tudent preferences, find next
 / supervisor-optimal match
-sapua:{[pc;uc;pu;upsUS]
+saua:{[pc;uc;pu;upsUS]
  u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
  ubc:uc>count each u;                          / supervisors below capacity
  pbc:pc>count each p;                          / projects below capacity
@@ -189,14 +189,14 @@ sapua:{[pc;uc;pu;upsUS]
  S[si]:first prune[sp;U;();pi];                                    / prune
  (u;p;s;U;S)}
 
-/ student-allocation problem wrapper function that enumerates the inputs,
-/ calls the sap function and unenumerates the results
-sapw:{[sapf;PC;UC;PU;U;S]
+/ student-allocation (SA) problem wrapper function that enumerates the
+/ inputs, calls the sa function and unenumerates the results
+saw:{[saf;PC;UC;PU;U;S]
  up:key PU; uu:key U; us:key S; / unique project, supervisors and students
  upsUS:((count[U];0)#0N;(count[PU];0)#0N;count[S]#0N;us?value U;up?value S);
- upsUS:sapf[PC up;UC uu;uu?PU up] over upsUS;
+ upsUS:saf[PC up;UC uu;uu?PU up] over upsUS;
  upsUS:(uu;up;us;uu;us)!'(us;us;up;us;up)@'upsUS;
  upsUS}
 
-saps:sapw[sapsa]
-sapu:sapw[sapua]
+sas:saw[sasa]                   / student-allocation (student-optimal)
+sau:saw[saua]                   / student-allocation (supervisor-optimal)

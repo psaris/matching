@@ -1,6 +1,6 @@
 all: test
 
-FILES = smp.q srp.q hrp.q sap.q
+FILES = sm.q sr.q hr.q sa.q
 
 test:
 	set -ex;\
