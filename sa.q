@@ -1,13 +1,16 @@
 \l util.q
 \l matching.q
 
-/ student-allocation (SA) problem
+-1 "student-allocation (SA) problem";
 
 / https://matching.readthedocs.io/en/latest/discussion/student_allocation/index.html
-
-s:2!("JJ",(-2+count first x)#"S";1#",") 0: x:read0 `:students.csv
-p:("SJS";1#",") 0: `:projects.csv
-u:("SJ";1#",") 0: `:supervisors.csv
+-1 "worked example from the matching python library";
+-1 "students";
+show s:2!("JJ",(-2+count first x)#"S";1#",") 0: x:read0 `:students.csv
+-1 "projects";
+show p:("SJS";1#",") 0: `:projects.csv
+-1 "supervisors";
+show u:("SJ";1#",") 0: `:supervisors.csv
 
 preprocess:{[u;p;s]
  s:where[all each null s] _ s; / drop students without any choices
@@ -36,10 +39,23 @@ preprocess:{[u;p;s]
  d:`PC`UC`PU`U`S!(PC;UC;PU;U;S);
  d}
 
+-1 "to simplify the algorithm, the data must be preprocessed";
 d:preprocess[u;p;s]
+-1 "the algorithm requires 5 dictionaries:";
+-1 " - project capacities";
+-1 " - supervisor capacities";
+-1 " - project to supervisor map";
+-1 " - supervisor student preferences";
+-1 " - student project preferences";
+-1 "student-optimal matches";
 upsUS:.matching.sas . d`PC`UC`PU`U`S
+-1 "the resulting project -> student map provides complete information";
+show upsUS 1
+-1 "python student-optimal implementation inserts matches in preferred order";
+-1 "this doesn't change the matches but forces us to sort before comparing";
 upsUS[1]:d[`U][d[`PU] key upsUS 1]{y iasc x?y}' upsUS 1 / sort by u's prefs
 .util.assert[1b] all raze upsUS[1]= .j.k raze read0 `:student_solution.json
 
+-1 "python supervisor-optimal matches (as in q) are sorted in matched order";
 upsUS:.matching.sau . d`PC`UC`PU`U`S
 .util.assert[1b] all raze upsUS[1]=.j.k raze read0 `:supervisor_solution.json

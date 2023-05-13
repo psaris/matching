@@ -1,27 +1,45 @@
 \l util.q
 \l matching.q
 
-/ stable marriage (SM) problem
-
+-1 "stable marriage (SM) problem";
 / https://people.math.sc.edu/czabarka/Theses/HidakatsuThesis.pdf
+-1 "example from Joe Hidakatsu's 2016 paper";
+-1 "Structure of the Stable Marriage and Stable Roommate Problems and Applications";
+-1 "load suitor preferences";
+show S:(1+til count S)!S:get each read0 `male.txt
+-1 "load reviewer preferences";
+show R:(1+til count R)!R:get each read0 `female.txt
+-1 "stable matches";
+first eSR:.matching.sm[S;R]
+-1 "remaining suitor preferences";
+show eSR 1
+-1 "remaining reviewer preferences";
+show eSR 2
+e:key[S]!3 1 7 5 4 6 8 2
+.util.assert[e] eSR 0
+-1 "suitors get optimal matches";
+.util.assert[e] first each eSR 1
+-1 "reviewers get pessimal matches";
+.util.assert[e] (!/) (value;key)@\: asc last each eSR 2
 
-S:(1+til count S)!S:get each read0 `male.txt
-R:(1+til count R)!R:get each read0 `female.txt
-e:3 1 7 5 4 6 8 2
-.util.assert[e] value first eSR:.matching.sm[S;R]
-.util.assert[e] first each value eSR 1
-
-/ demonstrate that reviewer can improve matching w/ truncation
+-1 "reviewer can improve matching w/ truncation";
+-1 "some new rankings are better than the original rankings";
 eSRs:.matching.sm[S] each 1 @[;7;6#]\ R
-.util.assert[1b] any (>/) (R?'{value[x]!key x} first ::) each eSRs
+show r:(,'/) (R?'(!/)(value;key)@\: first ::) each eSRs
+.util.assert[1b] any (>/) flip value r
 
 / rosetta code inputs: https://rosettacode.org/wiki/Stable_marriage_problem
-
+-1 "rosetta code has sample male/female data we can use";
 lf:`$"," vs' (!/) @[;0;`$] flip ":" vs' read0 ::
-F:lf `rfemale.txt
-M:lf `rmale.txt
-e:`ivy`cath`dee`fay`jan`bea`gay`eve`hope`abi / engagements
-.util.assert[key[M]!e] first eSR:.matching.sm[M;F]
-
-/ there is only one stable match and it is optimal for M and F
-.util.assert[key eSR 0] value asc first .matching.sm[F;M]
+-1 "female preferences";
+show F:lf `rfemale.txt
+-1 "male preferences";
+show M:lf `rmale.txt
+e:key[M]!`ivy`cath`dee`fay`jan`bea`gay`eve`hope`abi / engagements
+-1 "male-optimal matches";
+show first eSR:.matching.sm[M;F]
+.util.assert[e] eSR 0
+-1 "female-optimal results are equivalent";
+.util.assert[key eSR 0] value e:asc first .matching.sm[F;M]
+show e;
+-1 "which means there is only one stable match";
