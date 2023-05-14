@@ -1,6 +1,6 @@
-all: test
+all: solutions
 
-HRJSNS = capacities.json hospitals.json residents.json
+HRJSNS = residents.json hospitals.json capacities.json
 HRYMLS = $(HRJSNS:.json=.yml)
 
 $(HRYMLS) :
@@ -36,11 +36,14 @@ test: solutions
 		do q $$f > /dev/null </dev/null;\
   done
 
+timing: $(HRJSNS) $(SACSVS)
+	python timing.py
+
 clean-solutions:
 	$(RM) $(HRSOL) $(SASOL)
 
 clean-inputs:
-	$(RM) $(HRJSNS)  $(HRYMLS) $(SACSVS)
+	$(RM) $(HRJSNS) $(HRYMLS) $(SACSVS)
 
 clean: clean-inputs clean-solutions
 
