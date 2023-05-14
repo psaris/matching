@@ -101,9 +101,8 @@ print("timing python")
 print(timeit.timeit('hrp(R,H,C,opt="hospital")', number=10, globals=globals()))
 
 print("resident-optimal")
-# print("confirming equality of solutions")
-# TODO q and python are not sorted the same
-#assert hrq(R, H, C, opt='resident') == hrp(R, H, C, opt='resident')
+print("confirming equality of solutions")
+assert {k : [x for x in H[k] if x in v]  for k, v in hrq(R, H, C, opt='resident').items()} == hrp(R, H, C, opt='resident')
 print("timing q")
 print(timeit.timeit('hrq(R,H,C,opt="resident")', number=10, globals=globals()))
 print("timing python")
@@ -145,9 +144,8 @@ print("timing python")
 print(timeit.timeit('sap(S, U, PU, PC, UC,opt="supervisor")', number=10, globals=globals()))
 
 print("student-optimal")
-# print("confirming equality of solutions")
-# TODO q and python are not sorted the same
-#assert saq(S, U, PU, PC, UC, opt='student') == sap(S, U, PU, PC, UC, opt='student')
+print("confirming equality of solutions")
+assert {k : [x for x in U[PU[k]] if x in v]  for k, v in saq(S, U, PU, PC, UC, opt='student').items()} == sap(S, U, PU, PC, UC, opt='student')
 print("timing q")
 print(timeit.timeit('saq(S, U, PU, PC, UC,opt="student")', number=10, globals=globals()))
 print("timing python")

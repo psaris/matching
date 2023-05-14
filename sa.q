@@ -53,7 +53,7 @@ upsUS:.matching.sas . d`PC`UC`PU`U`S
 show upsUS 1
 -1 "python student-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
-upsUS[1]:d[`U][d[`PU] key upsUS 1]{y iasc x?y}' upsUS 1 / sort by u's prefs
+upsUS[1]:d[`U][d[`PU] key upsUS 1] inter' upsUS 1 / sort by supervisor prefs
 .util.assert[1b] all raze upsUS[1]= .j.k raze read0 `:student_solution.json
 
 -1 "python supervisor-optimal matches (as in q) are sorted in matched order";

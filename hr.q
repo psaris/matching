@@ -41,7 +41,7 @@ show C:.j.k raze read0 `:capacities.json
 hrHR:.matching.hrr[C;H;R]
 -1 "python resident-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
-show hrHR[0]:H[key hrHR 0]{y iasc x?y}' hrHR 0 / resort by hospital prefs
+show hrHR[0]:H[key hrHR 0] inter' hrHR 0 / sort by hospital prefs
 .util.assert[1b] all raze hrHR[0]=`$.j.k raze read0 `:resident_solution.json
 
 -1 "python hospital-optimal matches (as in q) are sorted in matched order";
