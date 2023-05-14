@@ -1,14 +1,16 @@
 from matching.games import StudentAllocation
 import pandas as pd
 import json
+import sys
 
 # student advisor
 
 # hand-cleaning the data as demonstrated by
 # https://matching.readthedocs.io/en/latest/tutorials/project_allocation/main.html
-raw_students = pd.read_csv("students.csv")
-raw_projects = pd.read_csv("projects.csv")
-raw_supervisors = pd.read_csv("supervisors.csv")
+
+raw_students = pd.read_csv(sys.argv[1])
+raw_projects = pd.read_csv(sys.argv[2])
+raw_supervisors = pd.read_csv(sys.argv[3])
 # there are 25 columns in the data
 n_choices = 25
 choices = map(str, range(n_choices))
@@ -105,10 +107,6 @@ for project, project_capacity in project_to_capacity.items():
     supervisor_capacity = supervisor_to_capacity[supervisor]
 
     if project_capacity > supervisor_capacity:
-        print(
-            f"{project} has a capacity of {project_capacity} but",
-            f"{supervisor} has capacity {supervisor_capacity}.",
-        )
         project_to_capacity[project] = supervisor_capacity
 
 # trim supervisor capacities
@@ -122,11 +120,6 @@ for supervisor, supervisor_capacity in supervisor_to_capacity.items():
     ]
 
     if supervisor_capacity > sum(supervisor_project_capacities):
-        print(
-            f"{supervisor} has capacity {supervisor_capacity} ',",
-            f"but their projects {', '.join(supervisor_projects)}",
-            f" have a total capacity of {sum(supervisor_project_capacities)}."
-        )
         supervisor_to_capacity[supervisor] = sum(supervisor_project_capacities)
 
 
@@ -142,12 +135,9 @@ def solve(opt: str):
     return s
 
 
-sps = solve(opt="student")      # student python solution
-with open('student_solution.json', 'w') as f:
-    d = {k.name: [x.name for x in v] for (k, v) in sps.items()}
-    json.dump(d, f, indent=1)
+optimal = sys.argv[4] if len(sys.argv) > 3 else "student"
 
-sus = solve(opt="supervisor")   # supervisor python solution
-with open('supervisor_solution.json', 'w') as f:
-    d = {k.name: [x.name for x in v] for (k, v) in sus.items()}
+s = solve(opt="student")        # solution
+with open(f'{optimal}_solution.json', 'w') as f:
+    d = {k.name: [x.name for x in v] for (k, v) in s.items()}
     json.dump(d, f, indent=1)
