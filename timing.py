@@ -132,7 +132,7 @@ def saq(S, U, PU, PC, UC, opt: str):
         f = kx.q.matching.sas
     else:
         return None
-    d = f(PC, UC, PU, U, S)[1].pd()
+    d = f(PC, UC, PU, U, S)[0].pd()
     return d
 
 print("supervisor-optimal")

@@ -21,15 +21,15 @@ show S:`A`B`C`D`E!(`X1`X2;`Y2`X2`Y1;`X1`Y1`X2;`Y2`X1`Y1;`X1`Y2`X2`Y1)
 show A:`X1`X2`Y1`Y2!(`C`A;0#`;1#`D;`B`E)
 
 -1 "student-optimal allocations";
-upsUS:.matching.sas[PC;UC;PU;U;S]
+pusUS:.matching.sas[PC;UC;PU;U;S]
 -1 "python student-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
-upsUS:@[upsUS;1;U[PU key upsUS 1] inter']
-.util.assert[A] upsUS 1
+pusUS:@[pusUS;0;U[PU key pusUS 0] inter']
+.util.assert[A] pusUS 0
 
 -1 "python supervisor-optimal matches (as in q) are sorted in matched order";
-upsUS:.matching.sau[PC;UC;PU;U;S]
-.util.assert[A] upsUS 1
+pusUS:.matching.sau[PC;UC;PU;U;S]
+.util.assert[A] pusUS 0
 
 -1 "worked example from the python 'matching' library";
 / https://matching.readthedocs.io/en/latest/tutorials/project_allocation
@@ -70,14 +70,14 @@ preprocess:{[u;p;s]
 -1 "the data must be preprocessed to obey problem constraints";
 d:preprocess[u;p;s]
 -1 "student-optimal matches";
-upsUS:.matching.sas . d`PC`UC`PU`U`S
+pusUS:.matching.sas . d`PC`UC`PU`U`S
 -1 "the resulting project -> student map provides complete information";
-show upsUS 1
+show first pusUS
 -1 "python student-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
-upsUS:@[upsUS;1;d[`U][d[`PU] key upsUS 1] inter'] / sort by supervisor prefs
-.util.assert[upsUS 1]"j"$.j.k raze read0 `:student_solution.json
+pusUS:@[pusUS;0;d[`U][d[`PU] key pusUS 0] inter'] / sort by supervisor prefs
+.util.assert[pusUS 0]"j"$.j.k raze read0 `:student_solution.json
 
 -1 "python supervisor-optimal matches (as in q) are sorted in matched order";
-upsUS:.matching.sau . d`PC`UC`PU`U`S
-.util.assert[upsUS 1] "j"$.j.k raze read0 `:supervisor_solution.json
+pusUS:.matching.sau . d`PC`UC`PU`U`S
+.util.assert[pusUS 0] "j"$.j.k raze read0 `:supervisor_solution.json

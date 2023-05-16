@@ -399,7 +399,7 @@ E| `X1`Y2`X2`Y1
 We now obtain the student-optimal allocations,
 
 ```q
-q).matching.sas[PC;UC;PU;U;S] 1
+q)first .matching.sas[PC;UC;PU;U;S]
 X1| `A`C
 X2| `symbol$()
 Y1| ,`D
@@ -409,7 +409,7 @@ Y2| `B`E
 and the supervisor-optimal allocations.
 
 ```q
-q).matching.sau[PC;UC;PU;U;S] 1
+q)first .matching.sau[PC;UC;PU;U;S]
 X1| `C`A
 X2| `symbol$()
 Y1| ,`D

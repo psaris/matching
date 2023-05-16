@@ -133,13 +133,13 @@ hrh:hrw[hrha]                  / hospital resident (hospital-optimal)
 / student-allocation (SA) problem
 
 / given (p)roject (c)apacity, s(u)pervisor (c)apacity, (p)roject to
-/ s(u)pervisor map and s(u)pervisor matches, (p)roject matches, (s)tudent
+/ s(u)pervisor map and (p)roject matches, s(u)pervisor matches, (s)tudent
 / matches, s(U)pervisor preferences and (S)tudent preferences, find next
 / student-optimal match
-sasa:{[pc;uc;pu;upsUS]
- u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
+sasa:{[pc;uc;pu;pusUS]
+ p:pusUS 0;u:pusUS 1;s:pusUS 2;U:pusUS 3;S:pusUS 4;
  mi:?[;1b] 0<count each S w:where null s; / first unmatched student
- if[mi=count w;:upsUS];                   / nothing to match
+ if[mi=count w;:pusUS];                   / nothing to match
  up:U ui:pu pi:first S si:w mi; / preferred project's supervisors preferences
  cu:count usis:u[ui],:si;cp:count psis:p[pi],:si;s[si]:pi; / match
  if[cp>pc pi;                         / project over capacity
@@ -154,7 +154,7 @@ sasa:{[pc;uc;pu;upsUS]
   ];
  if[cp=pc pi;S:last prune[up;S;pi;psis]]; / prune
  if[cu=uc ui;U[ui]:first upS:prune[up;S;where pu=ui;usis]; S:last upS];
- (u;p;s;U;S)}
+ (p;u;s;U;S)}
 
 / given (p)rojects (b)elow (c)apacity boolean vector, s(u)pervisors (b)elow
 / (c)apacity vector, (p)roject to s(u)pervisor map, (p)roject matches,
@@ -174,29 +174,29 @@ nextusp:{[pbc;ubc;pu;p;S;U;ui]
  usp}
 
 / given (p)roject (c)apacity, s(u)pervisor (c)apacity, (p)roject to
-/ s(u)pervisor map and s(u)pervisor matches, (p)roject matches, (s)tudent
+/ s(u)pervisor map and (p)roject matches, s(u)pervisor matches, (s)tudent
 / matches, s(U)pervisor preferences and (S)tudent preferences, find next
 / supervisor-optimal match
-saua:{[pc;uc;pu;upsUS]
- u:upsUS 0;p:upsUS 1;s:upsUS 2;U:upsUS 3;S:upsUS 4;
+saua:{[pc;uc;pu;pusUS]
+ p:pusUS 0;u:pusUS 1;s:pusUS 2;U:pusUS 3;S:pusUS 4;
  ubc:uc>count each u;                          / supervisors below capacity
  pbc:pc>count each p;                          / projects below capacity
  usp:(1=count::) nextusp[pbc;ubc;pu;p;S;U]/ 0; / iterate across supervisors
- if[not count usp;:upsUS];                     / no further matches found
+ if[not count usp;:pusUS];                     / no further matches found
  ui:usp 0; sp:S si:usp 1; pi: usp 2;           / unpack
  if[not null epi:s si; u:@[u;pu epi;drop;si]; p:@[p;epi;drop;si]]; / drop
  u[ui],:si; p[pi],:si; s[si]:pi;                                   / match
  S[si]:first prune[sp;U;();pi];                                    / prune
- (u;p;s;U;S)}
+ (p;u;s;U;S)}
 
 / student-allocation (SA) problem wrapper function that enumerates the
 / inputs, calls the sa function and unenumerates the results
 saw:{[saf;PC;UC;PU;U;S]
  up:key PU; uu:key U; us:key S; / unique project, supervisors and students
- upsUS:((count[U];0)#0N;(count[PU];0)#0N;count[S]#0N;us?value U;up?value S);
- upsUS:saf[PC up;UC uu;uu?PU up] over upsUS;
- upsUS:(uu;up;us;uu;us)!'(us;us;up;us;up)@'upsUS;
- upsUS}
+ pusUS:((count[PU];0)#0N;(count[U];0)#0N;count[S]#0N;us?value U;up?value S);
+ pusUS:saf[PC up;UC uu;uu?PU up] over pusUS;
+ pusUS:(up;uu;us;uu;us)!'(us;us;up;us;up)@'pusUS;
+ pusUS}
 
 sas:saw[sasa]                   / student-allocation (student-optimal)
 sau:saw[saua]                   / student-allocation (supervisor-optimal)
