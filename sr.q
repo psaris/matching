@@ -2,15 +2,26 @@
 \l matching.q
 
 -1 "stable roommates (SR) problem";
-/ https://en.wikipedia.org/wiki/Stable_roommates_problem
-/ https://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15251-f10/Site/Materials/Lectures/Lecture21/lecture21.pdf
+-1 "simple example from pythong 'matching' library";
+/ https://matching.readthedocs.io/en/latest/discussion/stable_roommates
+-1 "the algorithm requires a single dictionary:"
+-1 "roommate preferences for every *other* participant";
+R:`A`B`C!(`D`B`C`E`F;`A`D`C`F`E;`B`E`F`A`D)
+R,:`D`E`F!(`E`B`C`F`A;`F`C`D`B`A;`C`D`E`B`A)
+show R
+-1 "assignments";
+show A:`A`B`C`D`E`F!`B`A`E`F`C`D
+.util.assert[A] first .matching.sr R
 
 -1 "wikipedia has sample roommate data";
--1 "roommates must rank all *other* participants";
+/ https://en.wikipedia.org/wiki/Stable_roommates_problem
+-1 "roommate preferences";
 show R:(1+til count R)!R:get each read0 `wmate.txt
 -1 "stable matches are symmetric";
 show a:first .matching.sr R
-.util.assert[key[R]!6 4 5 2 3 1] a
+-1 "assignments";
+show A:key[R]!6 4 5 2 3 1
+.util.assert[A] a
 
 / https://people.math.sc.edu/czabarka/Theses/HidakatsuThesis.pdf
 
@@ -22,4 +33,6 @@ show R:(1+til count R)!R:get each read0 `mate.txt
 show first 1_aR:.matching.sr R
 -1 "phase 2 removes unstable cycles until only a single stable match exists";
 (-1 .Q.s::) each 2_aR;
-.util.assert[key[R]!4 3 2 1 7 8 5 6] aR 0
+-1 "assignments";
+A:key[R]!4 3 2 1 7 8 5 6
+.util.assert[A] first aR

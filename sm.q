@@ -2,12 +2,23 @@
 \l matching.q
 
 -1 "stable marriage (SM) problem";
-/ https://people.math.sc.edu/czabarka/Theses/HidakatsuThesis.pdf
+
+/ https://matching.readthedocs.io/en/latest/discussion/stable_marriage
+-1 "the algorithm requires two dictionaries:"
+-1 "suitor preferences"
+show S:`A`B`C!(`D`E`F;`D`F`E;`F`D`E)
+-1 "reviewer preferences";
+show R:`D`E`F!(`B`C`A;`A`C`B;`C`B`A)
+-1 "engagements";
+show E:`A`B`C!`E`D`F
+.util.assert[E] first .matching.sm[S;R]
+
 -1 "example from Joe Hidakatsu's 2016 paper";
+/ https://people.math.sc.edu/czabarka/Theses/HidakatsuThesis.pdf
 -1 "Structure of the Stable Marriage and Stable Roommate Problems and Applications";
--1 "load suitor preferences";
+-1 "suitor preferences";
 show S:(1+til count S)!S:get each read0 `male.txt
--1 "load reviewer preferences";
+-1 "reviewer preferences";
 show R:(1+til count R)!R:get each read0 `female.txt
 -1 "stable matches";
 first eSR:.matching.sm[S;R]

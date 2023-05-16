@@ -3,8 +3,36 @@
 
 -1 "student-allocation (SA) problem";
 
-/ https://matching.readthedocs.io/en/latest/discussion/student_allocation/index.html
--1 "worked example from the matching python library";
+-1 "simple example from python 'matching' library";
+/ https://matching.readthedocs.io/en/latest/discussion/student_allocation
+-1 "the algorithm requires 5 dictionaries:";
+-1 "project capacities";
+show PC:`X1`X2`Y1`Y2!2 2 2 2
+-1 "supervisor capacities";
+show UC:`X`Y!3 3
+-1 "project -> supervisor map";
+show PU:`X1`X2`Y1`Y2!`X`X`Y`Y
+-1 "supervisor student preferences";
+show U:`X`Y!(`B`C`A`E`D;`B`C`E`D)
+-1 "student project preferences";
+show S:`A`B`C`D`E!(`X1`X2;`Y2`X2`Y1;`X1`Y1`X2;`Y2`X1`Y1;`X1`Y2`X2`Y1)
+
+-1 "allocations";
+show A:`X1`X2`Y1`Y2!(`C`A;0#`;1#`D;`B`E)
+
+-1 "student-optimal allocations";
+upsUS:.matching.sas[PC;UC;PU;U;S]
+-1 "python student-optimal implementation inserts matches in preferred order";
+-1 "this doesn't change the matches but forces us to sort before comparing";
+upsUS:@[upsUS;1;U[PU key upsUS 1] inter']
+.util.assert[A] upsUS 1
+
+-1 "python supervisor-optimal matches (as in q) are sorted in matched order";
+upsUS:.matching.sau[PC;UC;PU;U;S]
+.util.assert[A] upsUS 1
+
+-1 "worked example from the python 'matching' library";
+/ https://matching.readthedocs.io/en/latest/tutorials/project_allocation
 -1 "students";
 show s:2!("JJ",(-2+count first x)#"S";1#",") 0: x:read0 `:students.csv
 -1 "projects";
@@ -39,23 +67,17 @@ preprocess:{[u;p;s]
  d:`PC`UC`PU`U`S!(PC;UC;PU;U;S);
  d}
 
--1 "to simplify the algorithm, the data must be preprocessed";
+-1 "the data must be preprocessed to obey problem constraints";
 d:preprocess[u;p;s]
--1 "the algorithm requires 5 dictionaries:";
--1 " - project capacities";
--1 " - supervisor capacities";
--1 " - project to supervisor map";
--1 " - supervisor student preferences";
--1 " - student project preferences";
 -1 "student-optimal matches";
 upsUS:.matching.sas . d`PC`UC`PU`U`S
 -1 "the resulting project -> student map provides complete information";
 show upsUS 1
 -1 "python student-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
-upsUS[1]:d[`U][d[`PU] key upsUS 1] inter' upsUS 1 / sort by supervisor prefs
-.util.assert[1b] all raze upsUS[1]= .j.k raze read0 `:student_solution.json
+upsUS:@[upsUS;1;d[`U][d[`PU] key upsUS 1] inter'] / sort by supervisor prefs
+.util.assert[upsUS 1]"j"$.j.k raze read0 `:student_solution.json
 
 -1 "python supervisor-optimal matches (as in q) are sorted in matched order";
 upsUS:.matching.sau . d`PC`UC`PU`U`S
-.util.assert[1b] all raze upsUS[1]=.j.k raze read0 `:supervisor_solution.json
+.util.assert[upsUS 1] "j"$.j.k raze read0 `:supervisor_solution.json
