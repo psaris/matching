@@ -7,14 +7,14 @@
 / https://matching.readthedocs.io/en/latest/discussion/hospital_resident
 -1 "the algorithm requires 3 dictionaries:";
 -1 "resident preferences";
-show R:`A`S`D`L`J!(1#`C;`C`M;`C`M`G;`M`C`G;`C`G`M)
+show R:([A:1#`C;S:`C`M;D:`C`M`G;L:`M`C`G;J:`C`G`M])
 -1 "hospital preferences";
-show H:`M`C`G!(`D`L`S`J;`D`A`S`L`J;`D`J`L)
+show H:([M:`D`L`S`J;C:`D`A`S`L`J;G:`D`J`L])
 -1 "hospital capacities";
 show C:key[H]!2 2 2
 
 -1 "allocations";
-show A:`M`C`G!(`L`S;`D`A;1#`J)
+show A:([M:`L`S;C:`D`A;G:1#`J])
 
 -1 "resident-optimal matches";
 show first hrHR:.matching.hrr[C;H;R]

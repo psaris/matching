@@ -6,11 +6,11 @@
 / https://matching.readthedocs.io/en/latest/discussion/stable_roommates
 -1 "the algorithm requires a single dictionary:"
 -1 "roommate preferences for every *other* participant";
-R:`A`B`C!(`D`B`C`E`F;`A`D`C`F`E;`B`E`F`A`D)
-R,:`D`E`F!(`E`B`C`F`A;`F`C`D`B`A;`C`D`E`B`A)
+R:([A:`D`B`C`E`F;B:`A`D`C`F`E;C:`B`E`F`A`D])
+R,:([D:`E`B`C`F`A;E:`F`C`D`B`A;F:`C`D`E`B`A])
 show R
 -1 "assignments";
-show A:`A`B`C`D`E`F!`B`A`E`F`C`D
+show A:([A:`B;B:`A;C:`E;D:`F;E:`C;F:`D])
 .util.assert[A] first .matching.sr R
 
 -1 "wikipedia has sample roommate data";

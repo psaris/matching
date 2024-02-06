@@ -6,11 +6,11 @@
 / https://matching.readthedocs.io/en/latest/discussion/stable_marriage
 -1 "the algorithm requires two dictionaries:"
 -1 "suitor preferences"
-show S:`A`B`C!(`D`E`F;`D`F`E;`F`D`E)
+show S:([A:`D`E`F;B:`D`F`E;C:`F`D`E])
 -1 "reviewer preferences";
-show R:`D`E`F!(`B`C`A;`A`C`B;`C`B`A)
+show R:([D:`B`C`A;E:`A`C`B;F:`C`B`A])
 -1 "engagements";
-show E:`A`B`C!`E`D`F
+show E:([A:`E;B:`D;C:`F])
 .util.assert[E] first .matching.sm[S;R]
 
 -1 "example from Joe Hidakatsu's 2016 paper";
@@ -27,7 +27,9 @@ show eSR 1
 -1 "remaining reviewer preferences";
 show eSR 2
 e:key[S]!3 1 7 5 4 6 8 2
-.util.assert[e] eSR 0
+\
+ eSR 1
+.util.assert[e] eSR 1
 -1 "suitors get optimal matches";
 .util.assert[e] first each eSR 1
 -1 "reviewers get pessimal matches";

@@ -37,11 +37,10 @@ sma:{[eSR]
 
 / given (S)uitor and (R)eviewer preferences, return the (e)ngagement
 / dictionary and remaining (S)uitor and (R)eviewer preferences for inspection
-sm:{[S;R]
- us:key S; ur:key R;                      / unique suitors and reviewers
- eSR:(count[S]#0N;ur?value S;us?value R); / initial state/enumerated values
+sm:{[(sn!sp);(rn!rp)]
+ eSR:(count[sn]#0N;rn?sp;sn?rp);  / initial state/enumerated values
  eSR:sma over eSR;                / iteratively apply Gale-Shapley algorithm
- eSR:(us;us;ur)!'(ur;ur;us)@'eSR; / map enumerations back to original values
+ eSR:(sn;sn;rn)!'(rn;rn;sn)@'eSR; / map enumerations back to original values
  eSR}
 
 
@@ -76,11 +75,10 @@ sra:{[aR]
 
 / given (R)oomate preference dictionary, return the (a)ssignment dictionary
 / and (R)oommate preference dictionaries from each decycle stage
-sr:{[R]
- ur:key R;                      / unique roommates
- aR:(count[R]#0N;ur?value R);   / initial assignment/enumerated values
+sr:{[(rn!rp)]
+ aR:(count[rn]#0N;rn?rp);       / initial assignment/enumerated values
  aR:sra aR;                     / apply stable roommate (SR) algorithm
- aR:ur!/:ur aR;                 / map enumerations back to original values
+ aR:rn!/:rn aR;                 / map enumerations back to original values
  aR}
 
 
@@ -88,12 +86,11 @@ sr:{[R]
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
 / (H)ospital and (R)esident preferences, find next resident-optimal match
-hrra:{[c;hrHR]
- h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
+hrra:{[c;(h;r;H;R)]
  mi:?[;1b] 0<count each R w:where null r; / first unmatched with prefs
- if[mi=count w;:hrHR];                    / nothing to match
+ if[mi=count w;:(h;r;H;R)];               / nothing to match
  hp:H hi:first R ri:w mi;                 / preferred hospital
- if[not ri in hp;:.[hrHR;(3;ri);1_]];     / hospital rejects
+ if[not ri in hp;:(h;r;H;@[R;ri;1_])];    / hospital rejects
  ch:count ris:h[hi],:ri; r[ri]:hi;        / match
  if[ch>c hi;                              / over capacity
   wri:hp max hp?ris;                      / worst resident
@@ -105,25 +102,23 @@ hrra:{[c;hrHR]
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
 / (H)ospital and (R)esident preferences, find next hospital-optimal match
-hrha:{[c;hrHR]
- h:hrHR 0;r:hrHR 1;H:hrHR 2;R:hrHR 3;
+hrha:{[c;(h;r;H;R)]
  w:where c>count each h;        / limit to hospitals with capacity
  mi:?[;1b] 0<count each m:H[w] except' h w; / first with unmatched prefs
- if[mi=count w;:hrHR];                      / nothing to match
+ if[mi=count w;:(h;r;H;R)];                 / nothing to match
  rp:R ri:first m mi; hi:w mi;               / preferred resident
- if[not hi in rp;:.[hrHR;(2;hi);1_]];       / resident preferences
+ if[not hi in rp;:(h;r;@[H;hi;1_];R)];      / resident preferences
  if[not null ehi:r ri; h:@[h;ehi;drop;ri]]; / drop existing match
- h[hi],:ri; r[ri]:hi;                           / match
+ h[hi],:ri; r[ri]:hi;                       / match
  R[ri]:first rpH:prune[rp;H;ri;hi]; H:last rpH; / prune
  (h;r;H;R)}
 
 / hospital resident (HR) problem wrapper function that enumerates the inputs,
 / calls the hr function and unenumerates the results
-hrw:{[hrf;C;H;R]
- uh:key H; ur:key R;
- hrHR:((count[H];0)#0N;count[R]#0N;ur?value H;uh?value R);
- hrHR:hrf[C uh] over hrHR;
- hrHR:(uh;ur;uh;ur)!'(ur;uh;ur;uh)@'hrHR;
+hrw:{[hrf;C;(hn!hp);(rn!rp)]
+ hrHR:((count hn;0)#0N;count[rn]#0N;rn?hp;hn?rp);
+ hrHR:hrf[C hn] over hrHR;
+ hrHR:(hn;rn;hn;rn)!'(rn;hn;rn;hn)@'hrHR;
  hrHR}
 
 hrr:hrw[hrra]                  / hospital resident (resident-optimal)
@@ -136,10 +131,9 @@ hrh:hrw[hrha]                  / hospital resident (hospital-optimal)
 / s(u)pervisor map and (p)roject matches, s(u)pervisor matches, (s)tudent
 / matches, s(U)pervisor preferences and (S)tudent preferences, find next
 / student-optimal match
-sasa:{[pc;uc;pu;pusUS]
- p:pusUS 0;u:pusUS 1;s:pusUS 2;U:pusUS 3;S:pusUS 4;
+sasa:{[pc;uc;pu;(p;u;s;U;S)]
  mi:?[;1b] 0<count each S w:where null s; / first unmatched student
- if[mi=count w;:pusUS];                   / nothing to match
+ if[mi=count w;:(p;u;s;U;S)];             / nothing to match
  up:U ui:pu pi:first S si:w mi; / preferred project's supervisors preferences
  cu:count usis:u[ui],:si;cp:count psis:p[pi],:si;s[si]:pi; / match
  if[cp>pc pi;                         / project over capacity
@@ -177,25 +171,23 @@ nextusp:{[pbc;ubc;pu;p;S;U;ui]
 / s(u)pervisor map and (p)roject matches, s(u)pervisor matches, (s)tudent
 / matches, s(U)pervisor preferences and (S)tudent preferences, find next
 / supervisor-optimal match
-saua:{[pc;uc;pu;pusUS]
- p:pusUS 0;u:pusUS 1;s:pusUS 2;U:pusUS 3;S:pusUS 4;
+saua:{[pc;uc;pu;(p;u;s;U;S)]
  ubc:uc>count each u;                          / supervisors below capacity
  pbc:pc>count each p;                          / projects below capacity
  usp:(1=count::) nextusp[pbc;ubc;pu;p;S;U]/ 0; / iterate across supervisors
- if[not count usp;:pusUS];                     / no further matches found
- ui:usp 0; sp:S si:usp 1; pi: usp 2;           / unpack
+ if[not count usp;:(p;u;s;U;S)];               / no further matches found
+ (ui;si;pi):usp;                               / unpack
  if[not null epi:s si; u:@[u;pu epi;drop;si]; p:@[p;epi;drop;si]]; / drop
  u[ui],:si; p[pi],:si; s[si]:pi;                                   / match
- S[si]:first prune[sp;U;();pi];                                    / prune
+ S[si]:first prune[S si;U;();pi];                                  / prune
  (p;u;s;U;S)}
 
 / student-allocation (SA) problem wrapper function that enumerates the
 / inputs, calls the sa function and unenumerates the results
-saw:{[saf;PC;UC;PU;U;S]
- up:key PU; uu:key U; us:key S; / unique project, supervisors and students
- pusUS:((count[PU];0)#0N;(count[U];0)#0N;count[S]#0N;us?value U;up?value S);
- pusUS:saf[PC up;UC uu;uu?PU up] over pusUS;
- pusUS:(up;uu;us;uu;us)!'(us;us;up;us;up)@'pusUS;
+saw:{[saf;PC;UC;(pn!pu);(un!up);(sn!sp)]
+ pusUS:((count pn;0)#0N;(count un;0)#0N;count[sn]#0N;sn?up;pn?sp);
+ pusUS:saf[PC pn;UC un;un?pu] over pusUS;
+ pusUS:(pn;un;sn;un;sn)!'(sn;sn;pn;sn;pn)@'pusUS;
  pusUS}
 
 sas:saw[sasa]                   / student-allocation (student-optimal)

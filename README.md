@@ -272,7 +272,7 @@ hospital capacity dictionary.
 
 Resident preferences:
 ```q
-q)show R:`A`S`D`L`J!(1#`C;`C`M;`C`M`G;`M`C`G;`C`G`M)
+q)show R:([A:1#`C;S:`C`M;D:`C`M`G;L:`M`C`G;J:`C`G`M])
 A| ,`C
 S| `C`M
 D| `C`M`G
@@ -282,7 +282,7 @@ J| `C`G`M
 
 Hospital preferences:
 ```q
-q)show H:`M`C`G!(`D`L`S`J;`D`A`S`L`J;`D`J`L)
+q)show H:([M:`D`L`S`J;C:`D`A`S`L`J;G:`D`J`L])
 M| `D`L`S`J
 C| `D`A`S`L`J
 G| `D`J`L
@@ -356,7 +356,7 @@ supervisor preferences.
 
 Project capacities:
 ```q
-q)show PC:`X1`X2`Y1`Y2!2 2 2 2
+q)show PC:([X1:2;X2:2;Y1:2;Y2:2])
 X1| 2
 X2| 2
 Y1| 2
@@ -365,14 +365,14 @@ Y2| 2
 
 Supervisor capacities:
 ```q
-q)show UC:`X`Y!3 3
+q)show UC:([X:3;Y:3])
 X| 3
 Y| 3
 ```
 Project to supervisor map:
 
 ```q
-q)show PU:`X1`X2`Y1`Y2!`X`X`Y`Y
+q)show PU:([X1:`X;X2:`X;Y1:`Y;Y2:`Y])
 X1| X
 X2| X
 Y1| Y
@@ -381,14 +381,14 @@ Y2| Y
 
 Supervisor preferences:
 ```q
-q)show U:`X`Y!(`B`C`A`E`D;`B`C`E`D)
+q)show U:([X:`B`C`A`E`D;Y:`B`C`E`D])
 X| `B`C`A`E`D
 Y| `B`C`E`D
 ```
 
 Student preferences:
 ```q
-q)show S:`A`B`C`D`E!(`X1`X2;`Y2`X2`Y1;`X1`Y1`X2;`Y2`X1`Y1;`X1`Y2`X2`Y1)
+q)show S:([A:`X1`X2;B:`Y2`X2`Y1;C:`X1`Y1`X2;D:`Y2`X1`Y1;E:`X1`Y2`X2`Y1])
 A| `X1`X2
 B| `Y2`X2`Y1
 C| `X1`Y1`X2

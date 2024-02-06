@@ -7,18 +7,18 @@
 / https://matching.readthedocs.io/en/latest/discussion/student_allocation
 -1 "the algorithm requires 5 dictionaries:";
 -1 "project capacities";
-show PC:`X1`X2`Y1`Y2!2 2 2 2
+show PC:([X1:2;X2:2;Y1:2;Y2:2])
 -1 "supervisor capacities";
-show UC:`X`Y!3 3
+show UC:([X:3;Y:3])
 -1 "project -> supervisor map";
-show PU:`X1`X2`Y1`Y2!`X`X`Y`Y
+show PU:([X1:`X;X2:`X;Y1:`Y;Y2:`Y])
 -1 "supervisor student preferences";
-show U:`X`Y!(`B`C`A`E`D;`B`C`E`D)
+show U:([X:`B`C`A`E`D;Y:`B`C`E`D])
 -1 "student project preferences";
-show S:`A`B`C`D`E!(`X1`X2;`Y2`X2`Y1;`X1`Y1`X2;`Y2`X1`Y1;`X1`Y2`X2`Y1)
+show S:([A:`X1`X2;B:`Y2`X2`Y1;C:`X1`Y1`X2;D:`Y2`X1`Y1;E:`X1`Y2`X2`Y1])
 
 -1 "allocations";
-show A:`X1`X2`Y1`Y2!(`C`A;0#`;1#`D;`B`E)
+show A:([X1:`C`A;X2:0#`;Y1:1#`D;Y2:`B`E])
 
 -1 "student-optimal allocations";
 pusUS:.matching.sas[PC;UC;PU;U;S]
