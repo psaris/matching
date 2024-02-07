@@ -13,7 +13,10 @@ prune:{[rp;S;ris;sis]
 
 / given (R)oommate preferences and (r)eviewer and (s)uitor indices, return
 / the pruned Roommate preferences
-pruner:{[R;ri;si]@[last rpR;ri;:;first rpR:prune[R ri;R;ri;si]]}
+pruner:{[R;ri;si]
+ (rp;R):prune[R ri;R;ri;si];    / prune and return roommate preferences
+ R[ri]:rp;                      / assign pruned preferences
+ R}
 
 
 / stable marriage (SM) problem aka Gale-Shapley algorithm
@@ -30,9 +33,9 @@ sma:{[eSR]
  if[count[rp]=sir:rp?si;:.[eSR;(Si;si);1_]]; / not on reviewer's list
  / renege if already engaged and this suitor is better
  if[not n=ei:e?ri;if[sir<rp?ei;eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
- e[si]:ri; eSR[0]:e;                      / get engaged
- eSR[Si]:last rpS:prune[rp;eSR Si;ri;si]; / first replace suitor prefers
- eSR[Ri;ri]:first rpS;                    / order matters when used for SR
+ e[si]:ri; eSR[0]:e;                 / get engaged
+ (rp;eSR Si):prune[rp;eSR Si;ri;si]; / first replace suitor prefers
+ eSR[Ri;ri]:rp;                      / order matters when used for SR
  eSR}
 
 / given (S)uitor and (R)eviewer preferences, return the (e)ngagement
@@ -68,7 +71,7 @@ decycle:{[R]
 / given (a)ssignment vector and (R)oomate preferences, return the completed
 / (a)ssignment vector (R)oommate preferences from each decycle stage
 sra:{[aR]
- R:last sma over aR;            / apply phase 1 and throw away assignments
+ (;R):sma over aR;              / apply phase 1 and throw away assignments
  R:decycle scan R;              / apply phase 2
  aR:enlist[last[R][;0]],R;      / prepend assignment vector
  aR}
@@ -97,7 +100,7 @@ hrra:{[c;(h;r;H;R)]
   ch:count ris:h[hi]:drop[ris;wri]; / drop resident from hospital match
   r[wri]:0N;                        / drop resident match
   ];
- if[ch=c hi; H[hi]:first hpR:prune[hp;R;hi;ris]; R:last hpR]; / prune
+ if[ch=c hi;(H hi;R):prune[hp;R;hi;ris]]; / prune
  (h;r;H;R)}
 
 / given hospital (c)apacity and (h)ospital matches, (r)esident matches,
@@ -110,7 +113,7 @@ hrha:{[c;(h;r;H;R)]
  if[not hi in rp;:(h;r;@[H;hi;1_];R)];      / resident preferences
  if[not null ehi:r ri; h:@[h;ehi;drop;ri]]; / drop existing match
  h[hi],:ri; r[ri]:hi;                       / match
- R[ri]:first rpH:prune[rp;H;ri;hi]; H:last rpH; / prune
+ (R ri;H):prune[rp;H;ri;hi];                / prune
  (h;r;H;R)}
 
 / hospital resident (HR) problem wrapper function that enumerates the inputs,
@@ -146,8 +149,8 @@ sasa:{[pc;uc;pu;(p;u;s;U;S)]
   p:@[p;s wsi;drop;wsi]; s[wsi]:0N;   / drop from other project
   cu:count usis:u[ui]:drop[usis;wsi]; / drop from supervisor
   ];
- if[cp=pc pi;S:last prune[up;S;pi;psis]]; / prune
- if[cu=uc ui;U[ui]:first upS:prune[up;S;where pu=ui;usis]; S:last upS];
+ if[cp=pc pi;(;S):prune[up;S;pi;psis]]; / prune
+ if[cu=uc ui;(U ui;S):prune[up;S;where pu=ui;usis]];
  (p;u;s;U;S)}
 
 / given (p)rojects (b)elow (c)apacity boolean vector, s(u)pervisors (b)elow
@@ -179,7 +182,7 @@ saua:{[pc;uc;pu;(p;u;s;U;S)]
  (ui;si;pi):usp;                               / unpack
  if[not null epi:s si; u:@[u;pu epi;drop;si]; p:@[p;epi;drop;si]]; / drop
  u[ui],:si; p[pi],:si; s[si]:pi;                                   / match
- S[si]:first prune[S si;U;();pi];                                  / prune
+ (S si;):prune[S si;U;();pi];                                      / prune
  (p;u;s;U;S)}
 
 / student-allocation (SA) problem wrapper function that enumerates the
