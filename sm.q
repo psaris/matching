@@ -27,9 +27,7 @@ show eSR 1
 -1 "remaining reviewer preferences";
 show eSR 2
 e:key[S]!3 1 7 5 4 6 8 2
-\
- eSR 1
-.util.assert[e] eSR 1
+
 -1 "suitors get optimal matches";
 .util.assert[e] first each eSR 1
 -1 "reviewers get pessimal matches";
