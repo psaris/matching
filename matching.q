@@ -36,7 +36,7 @@ sma:{[eSR]
 
 / given (S)uitor and (R)eviewer preferences, return the (e)ngagement
 / dictionary and remaining (S)uitor and (R)eviewer preferences for inspection
-sm:{[(sn!sp);(rn!rp)]
+sm:{[sn!sp;rn!rp]
  eSR:(count[sn]#0N;rn?sp;sn?rp);  / initial state/enumerated values
  eSR:sma over eSR;                / iteratively apply Gale-Shapley algorithm
  eSR:(sn;sn;rn)!'(rn;rn;sn)@'eSR; / map enumerations back to original values
@@ -74,7 +74,7 @@ sra:{[aR]
 
 / given (R)oomate preference dictionary, return the (a)ssignment dictionary
 / and (R)oommate preference dictionaries from each decycle stage
-sr:{[(rn!rp)]
+sr:{[rn!rp]
  aR:(count[rn]#0N;rn?rp);       / initial assignment/enumerated values
  aR:sra aR;                     / apply stable roommate (SR) algorithm
  aR:rn!/:rn aR;                 / map enumerations back to original values
@@ -114,7 +114,7 @@ hrha:{[c;(h;r;H;R)]
 
 / hospital resident (HR) problem wrapper function that enumerates the inputs,
 / calls the hr function and unenumerates the results
-hrw:{[hrf;C;(hn!hp);(rn!rp)]
+hrw:{[hrf;C;hn!hp;rn!rp]
  hrHR:((count hn;0)#0N;count[rn]#0N;rn?hp;hn?rp);
  hrHR:hrf[C hn] over hrHR;
  hrHR:(hn;rn;hn;rn)!'(rn;hn;rn;hn)@'hrHR;
@@ -183,7 +183,7 @@ saua:{[pc;uc;pu;(p;u;s;U;S)]
 
 / student-allocation (SA) problem wrapper function that enumerates the
 / inputs, calls the sa function and unenumerates the results
-saw:{[saf;PC;UC;(pn!pu);(un!up);(sn!sp)]
+saw:{[saf;PC;UC;pn!pu;un!up;sn!sp]
  pusUS:((count pn;0)#0N;(count un;0)#0N;count[sn]#0N;sn?up;pn?sp);
  pusUS:saf[PC pn;UC un;un?pu] over pusUS;
  pusUS:(pn;un;sn;un;sn)!'(sn;sn;pn;sn;pn)@'pusUS;
