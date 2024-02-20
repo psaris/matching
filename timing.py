@@ -1,6 +1,5 @@
 import sys
 import timeit
-import json
 import numpy as np
 from matching.games import StableMarriage
 from matching.games import StableRoommates
@@ -15,10 +14,9 @@ print("loading q matching library")
 kx.q._register("matching")
 np.random.seed(0)
 
-
 print("* stable marriage (SM) problem *")
 
-sys.setrecursionlimit(10000) # overcome call to copy.deepcopy
+sys.setrecursionlimit(10000)  # overcome call to copy.deepcopy
 n = 200
 sd = {s: np.argsort(np.random.random(size=n)) for s in range(n)}
 rd = {r: np.argsort(np.random.random(size=n)) for r in range(n)}
@@ -34,16 +32,21 @@ def smp(sd, rd):
     d = {k.name: v.name for (k, v) in g.solve().items()}
     return d
 
+
+def timethis(cmd, n):
+    timeit.timeit(cmd, n, globals=globals())
+
+
 print("confirming equality of solutions")
 assert smq(sd, rd) == smp(sd, rd)  # assert equality
 print("timing q")
-print(timeit.timeit('smq(sd,rd)', number=1, globals=globals()))
+print(timethis('smq(sd,rd)', 1))
 print("timing python")
-print(timeit.timeit('smp(sd,rd)', number=1, globals=globals()))
+print(timethis('smp(sd,rd)', 1))
 
 
-
 print("* stable roommates (SR) problem *")
+
 
 def srq(rd):
     d = kx.q.matching.sr(rd)[0].pd()
@@ -60,12 +63,10 @@ rd = {k: [x for x in v if x != k] for (k, v) in rd.items()}
 print("confirming equality of solutions")
 assert srq(rd) == srp(rd)     # assert equality
 print("timing q")
-print(timeit.timeit('srq(rd)', number=1, globals=globals()))
+print(timethis('srq(rd)', 1))
 print("timing python")
-print(timeit.timeit('srp(rd)', number=1, globals=globals()))
+print(timethis('srp(rd)', 1))
 
-
-
 print("* hospital residents (HR) problem *")
 
 (R, H, C) = hr.load('residents.json', 'hospitals.json', 'capacities.json')
@@ -92,23 +93,28 @@ def hrq(R, H, C, opt: str):
     d = f(C, H, R)[0].pd()
     return d
 
+
 print("hospital-optimal")
 print("confirming equality of solutions")
-assert hrq(R, H, C, opt='hospital') == hrp(R, H, C, opt='hospital')
+hrpr = hrp(R, H, C, opt='hospital')
+hrqr = hrq(R, H, C, opt='hospital')
+assert hrqr == hrpr
 print("timing q")
-print(timeit.timeit('hrq(R,H,C,opt="hospital")', number=10, globals=globals()))
+print(timethis('hrq(R,H,C,opt="hospital")', 10))
 print("timing python")
-print(timeit.timeit('hrp(R,H,C,opt="hospital")', number=10, globals=globals()))
+print(timethis('hrp(R,H,C,opt="hospital")', 10))
 
 print("resident-optimal")
 print("confirming equality of solutions")
-assert {k : [x for x in H[k] if x in v]  for k, v in hrq(R, H, C, opt='resident').items()} == hrp(R, H, C, opt='resident')
+hrpr = hrp(R, H, C, opt='resident')
+hrqr = hrq(R, H, C, opt='resident')
+hrqr = {k: [x for x in H[k] if x in v]  for k, v in hrqr.items()}
+assert hrqr == hrpr
 print("timing q")
-print(timeit.timeit('hrq(R,H,C,opt="resident")', number=10, globals=globals()))
+print(timethis('hrq(R,H,C,opt="resident")', 10))
 print("timing python")
-print(timeit.timeit('hrp(R,H,C,opt="resident")', number=10, globals=globals()))
+print(timethis('hrp(R,H,C,opt="resident")', 10))
 
-
 print("* student allocation (SA) problem *")
 
 (S, U, PU, PC, UC) = sa.load('students.csv', 'projects.csv', 'supervisors.csv')
@@ -135,18 +141,24 @@ def saq(S, U, PU, PC, UC, opt: str):
     d = f(PC, UC, PU, U, S)[0].pd()
     return d
 
+
 print("supervisor-optimal")
 print("confirming equality of solutions")
-assert saq(S, U, PU, PC, UC, opt='supervisor') == sap(S, U, PU, PC, UC, opt='supervisor')
+sapr = sap(S, U, PU, PC, UC, opt='supervisor')
+saqr = saq(S, U, PU, PC, UC, opt='supervisor')
+assert sapr == saqr
 print("timing q")
-print(timeit.timeit('saq(S, U, PU, PC, UC,opt="supervisor")', number=10, globals=globals()))
+print(timethis('saq(S, U, PU, PC, UC,opt="supervisor")', 10))
 print("timing python")
-print(timeit.timeit('sap(S, U, PU, PC, UC,opt="supervisor")', number=10, globals=globals()))
+print(timethis('sap(S, U, PU, PC, UC,opt="supervisor")', 10))
 
 print("student-optimal")
 print("confirming equality of solutions")
-assert {k : [x for x in U[PU[k]] if x in v]  for k, v in saq(S, U, PU, PC, UC, opt='student').items()} == sap(S, U, PU, PC, UC, opt='student')
+sapr = sap(S, U, PU, PC, UC, opt='student')
+saqr = saq(S, U, PU, PC, UC, opt='student')
+saqr = {k: [x for x in U[PU[k]] if x in v] for k, v in saqr.items()}
+assert saqr == sapr
 print("timing q")
-print(timeit.timeit('saq(S, U, PU, PC, UC,opt="student")', number=10, globals=globals()))
+print(timethis('saq(S, U, PU, PC, UC,opt="student")', 10))
 print("timing python")
-print(timeit.timeit('sap(S, U, PU, PC, UC,opt="student")', number=10, globals=globals()))
+print(timethis('sap(S, U, PU, PC, UC,opt="student")', 10))
