@@ -23,13 +23,13 @@ pruner:{[R;ri;si] (R;R ri):prune[R;R ri;ri;si]; R}
 / roommate preferences are assumed if (R)eviewer preferences are not
 / provided.
 sma:{[eSR]
- n:count e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;
+ e:eSR 0;S:eSR Si:1;R:eSR Ri:-1+count eSR;   / manually unpack
  mi:?[;1b] 0<count each S w:where null e;    / first unmatched with prefs
  if[mi=count w;:eSR];                        / no unmatched suitor
  rp:R ri:first s:S si:w mi;                  / preferred reviewer's prefs
  if[count[rp]=sir:rp?si;:.[eSR;(Si;si);1_]]; / not on reviewer's list
  / renege if already engaged and this suitor is better
- if[not n=ei:e?ri;if[sir<rp?ei;eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
+ if[not count[e]=ei:e?ri;if[sir<rp?ei;eSR:.[eSR;(Si;ei);1_];e[ei]:0N]];
  e[si]:ri; eSR[0]:e;                         / get engaged
  (eSR Si;eSR[Ri;ri]):prune[eSR Si;rp;ri;si]; / assignment order matters
  eSR}
