@@ -6,9 +6,9 @@ drop:{x _ x?y}
 / given (S)uiter preferences, (r)eviewer (p)refs, and (s)uitor (i)ndice(s)
 / and (r)eviewer (i)ndice(s), return the pruned reviewer and Suitor prefs
 prune:{[S;rp;ris;sis]
- if[count[rp]=i:1+max rp?sis;:(S;rp)]; / return early if nothing to do
- (rp;sis):(0;i) cut rp;                / drop worse suitors from preferences
- S:S @[;sis;drop;]/ ris;               / drop reviewers from worse suitors
+ if[count[rp]<=i:1+max rp?sis;:(S;rp)]; / return early if nothing to do
+ (rp;sis):(0;i) cut rp;                 / drop worse suitors from preferences
+ S:S @[;sis;drop;]/ ris;                / drop reviewers from worse suitors
  (S;rp)}
 
 / given (R)oommate preferences and (r)eviewer and (s)uitor indices, return
