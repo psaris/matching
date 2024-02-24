@@ -1,4 +1,3 @@
-\l util.q
 \l matching.q
 
 -1 "stable marriage (SM) problem";
@@ -11,7 +10,7 @@ show S:([A:`D`E`F;B:`D`F`E;C:`F`D`E])
 show R:([D:`B`C`A;E:`A`C`B;F:`C`B`A])
 -1 "engagements";
 show E:([A:`E;B:`D;C:`F])
-.util.assert[E] first .matching.sm[S;R]
+(1b):E ~ first .matching.sm[S;R]
 
 -1 "example from Joe Hidakatsu's 2016 paper";
 / https://people.math.sc.edu/czabarka/Theses/HidakatsuThesis.pdf
@@ -29,15 +28,15 @@ show eSR 2
 e:key[S]!3 1 7 5 4 6 8 2
 
 -1 "suitors get optimal matches";
-.util.assert[e] first each eSR 1
+(1b):e ~ first each eSR 1
 -1 "reviewers get pessimal matches";
-.util.assert[e] (!/) (value;key)@\: asc last each eSR 2
+(1b):e ~ (!/) (value;key)@\: asc last each eSR 2
 
 -1 "reviewer can improve matching w/ truncation";
 -1 "some new rankings are better than the original rankings";
 eSRs:.matching.sm[S] each 1 @[;7;6#]\ R
 show r:(,'/) (R?'(!/)(value;key)@\: first ::) each eSRs
-.util.assert[1b] any (>/) flip value r
+(1b):any (>/) flip value r
 
 / rosetta code inputs: https://rosettacode.org/wiki/Stable_marriage_problem
 -1 "rosetta code has sample male/female data we can use";
@@ -49,8 +48,8 @@ show M:lf `rmale.txt
 e:key[M]!`ivy`cath`dee`fay`jan`bea`gay`eve`hope`abi / engagements
 -1 "male-optimal matches";
 show first eSR:.matching.sm[M;F]
-.util.assert[e] eSR 0
+(1b):e ~ eSR 0
 -1 "female-optimal results are equivalent";
-.util.assert[key eSR 0] value e:asc first .matching.sm[F;M]
+(1b):key[eSR 0] ~ value e:asc first .matching.sm[F;M]
 show e;
 -1 "which means there is only one stable match";

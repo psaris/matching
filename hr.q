@@ -1,4 +1,3 @@
-\l util.q
 \l matching.q
 
 -1 "hospital resident (HR) problem";
@@ -21,11 +20,11 @@ show first hrHR:.matching.hrr[C;H;R]
 -1 "python resident-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
 hrHR:@[hrHR;0;H[key hrHR 0] inter'] / sort by hospital prefs
-.util.assert[A] first hrHR
+(1b):A ~ first hrHR
 
 -1 "python hospital-optimal matches (as in q) are sorted in matched order";
 show first hrHR:.matching.hrh[C;H;R]
-.util.assert[A] first hrHR
+(1b):A ~ first hrHR
 -1 "which result in the same matches for this problem";
 
 -1 "worked example from the matching python library";
@@ -42,8 +41,8 @@ hrHR:.matching.hrr[C;H;R]
 -1 "python resident-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
 hrHR:@[hrHR;0;H[key hrHR 0] inter'] / sort by hospital prefs
-.util.assert[hrHR 0] `$.j.k raze read0 `:resident_solution.json
+(1b):hrHR[0] ~ `$.j.k raze read0 `:resident_solution.json
 
 -1 "python hospital-optimal matches (as in q) are sorted in matched order";
 hrHR:.matching.hrh[C;H;R]
-.util.assert[hrHR 0] `$.j.k raze read0 `:hospital_solution.json
+(1b):hrHR[0] ~ `$.j.k raze read0 `:hospital_solution.json

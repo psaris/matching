@@ -1,4 +1,3 @@
-\l util.q
 \l matching.q
 
 -1 "student-allocation (SA) problem";
@@ -25,11 +24,11 @@ pusUS:.matching.sas[PC;UC;PU;U;S]
 -1 "python student-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
 pusUS:@[pusUS;0;U[PU key pusUS 0] inter']
-.util.assert[A] pusUS 0
+(1b):A ~ pusUS 0
 
 -1 "python supervisor-optimal matches (as in q) are sorted in matched order";
 pusUS:.matching.sau[PC;UC;PU;U;S]
-.util.assert[A] pusUS 0
+(1b):A ~ pusUS 0
 
 -1 "worked example from the python 'matching' library";
 / https://matching.readthedocs.io/en/latest/tutorials/project_allocation
@@ -76,8 +75,8 @@ show first pusUS
 -1 "python student-optimal implementation inserts matches in preferred order";
 -1 "this doesn't change the matches but forces us to sort before comparing";
 pusUS:@[pusUS;0;d[`U][d[`PU] key pusUS 0] inter'] / sort by supervisor prefs
-.util.assert[pusUS 0]"j"$.j.k raze read0 `:student_solution.json
+(1b):pusUS[0] ~ "j"$.j.k raze read0 `:student_solution.json
 
 -1 "python supervisor-optimal matches (as in q) are sorted in matched order";
 pusUS:.matching.sau . d`PC`UC`PU`U`S
-.util.assert[pusUS 0] "j"$.j.k raze read0 `:supervisor_solution.json
+(1b):pusUS[0] ~ "j"$.j.k raze read0 `:supervisor_solution.json

@@ -1,4 +1,3 @@
-\l util.q
 \l matching.q
 
 -1 "stable roommates (SR) problem";
@@ -11,7 +10,7 @@ R,:([D:`E`B`C`F`A;E:`F`C`D`B`A;F:`C`D`E`B`A])
 show R
 -1 "assignments";
 show A:([A:`B;B:`A;C:`E;D:`F;E:`C;F:`D])
-.util.assert[A] first .matching.sr R
+(1b):A ~ first .matching.sr R
 
 -1 "wikipedia has sample roommate data";
 / https://en.wikipedia.org/wiki/Stable_roommates_problem
@@ -21,7 +20,7 @@ show R:(1+til count R)!R:get each read0 `wmate.txt
 show a:first .matching.sr R
 -1 "assignments";
 show A:key[R]!6 4 5 2 3 1
-.util.assert[A] a
+(1b):A ~ a
 
 / https://people.math.sc.edu/czabarka/Theses/HidakatsuThesis.pdf
 
@@ -35,4 +34,4 @@ show first 1_aR:.matching.sr R
 (-1 .Q.s::) each 2_aR;
 -1 "assignments";
 A:key[R]!4 3 2 1 7 8 5 6
-.util.assert[A] first aR
+(1b):A ~ first aR
