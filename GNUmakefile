@@ -37,7 +37,7 @@ test: solutions
   done
 
 timing: $(HRJSNS) $(SACSVS)
-	python timing.py
+	PYKX_4_1_ENABLED=1 python timing.py
 
 clean-solutions:
 	$(RM) $(HRSOL) $(SASOL)

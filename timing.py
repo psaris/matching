@@ -34,7 +34,7 @@ def smp(sd, rd):
 
 
 def timethis(cmd, n):
-    timeit.timeit(cmd, n, globals=globals())
+    return timeit.timeit(cmd, number=n, globals=globals())
 
 
 print("confirming equality of solutions")
